@@ -7,16 +7,16 @@
 
 ## 0. 제출 정보
 
-- 이름:
-- GitHub ID:
+- 이름: 조영우
+- GitHub ID: cyw0927
 - 개인 저장소명: `llm-data-analysis-study`
-- 작성일:
-- 사용한 LLM:
+- 작성일: 2026-09-03
+- 사용한 LLM: ChatGPT
 
 ### 최종 제출 URL
 
-```text
-여기에 개인 GitHub 저장소의 chapter01/chapter01.md 파일 URL을 입력하세요.
+```
+
 ```
 
 ---
