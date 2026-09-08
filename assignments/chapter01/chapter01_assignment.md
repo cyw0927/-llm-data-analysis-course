@@ -16,7 +16,7 @@
 ### 최종 제출 URL
 
 ```text
-https://github.com/cyw0927/-llm-data-analysis-course/blob/main/chapter01/chapter01_assignment.md
+https://github.com/cyw0927/-llm-data-analysis-course/blob/main/assignments/chapter01/chapter01_assignment.md
 ```
 
 ---
@@ -473,7 +473,7 @@ LLM의 답변이 자연스럽고 그럴듯하다는 이유만으로 실제 데�
 ### 최종 파일 URL
 
 ```text
-https://github.com/cyw0927/-llm-data-analysis-course/blob/main/chapter01/chapter01_assignment.md
+https://github.com/cyw0927/-llm-data-analysis-course/blob/main/assignments/chapter01/chapter01_assignment.md
 ```
 
 ---
