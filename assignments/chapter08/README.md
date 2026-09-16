@@ -8,11 +8,18 @@
 assignments/chapter08/
 ├─ chapter08.ipynb
 ├─ README.md
-└─ images/
-   ├─ step02_data_validation.png
-   ├─ graph01.png
-   ├─ graph02.png
-   └─ step06_reproduce.png
+├─ images/
+│  ├─ step02_data_validation.png
+│  ├─ graph01.png
+│  ├─ graph02.png
+│  └─ step06_reproduce.png
+└─ reference/
+   ├─ chapter08_practice_guide.md
+   ├─ chapter08_assignment.md
+   ├─ SUBMISSION_GUIDE.md
+   ├─ CHAPTER_SUBMISSION_MATRIX.md
+   ├─ validate_ch08_public_release.py
+   └─ ch08-public-qa.yml
 ```
 
 ## 이번 장에서 확인할 핵심
@@ -38,8 +45,30 @@ data/raw/products.csv
 data/raw/orders.csv
 data/raw/order_items.csv
 scripts/run_midterm_project.py
+src/__init__.py
+src/data_loader.py
+src/preprocessing.py
+src/eda.py
+src/visualization.py
 src/midterm_project.py
 ```
+
+위 파일 중 Chapter 08 실행에 부족했던 공식 Public 자료는 강사 저장소 기준으로 추가했습니다. 기존 `src/preprocessing.py`와 `data/raw`의 네 CSV는 이미 저장소에 있었기 때문에 그대로 사용합니다.
+
+## 공식 자료 보관 위치
+
+강사 Public 저장소에서 Chapter 08 안내에 명시된 자료는 `assignments/chapter08/reference/`에 별도 보관했습니다.
+
+```text
+chapter08_practice_guide.md       # 단계별 실습 가이드
+chapter08_assignment.md           # Notebook에 옮겨 작성할 답안 템플릿
+SUBMISSION_GUIDE.md               # 공통 제출 가이드
+CHAPTER_SUBMISSION_MATRIX.md      # Chapter별 제출/Evidence 기준
+validate_ch08_public_release.py   # Public QA 참고 스크립트
+ch08-public-qa.yml                # Public QA GitHub Actions 참고 파일
+```
+
+`chapter08.ipynb`는 공식 `notebooks/ch08_midterm_project.ipynb`를 제출용 위치인 `assignments/chapter08/chapter08.ipynb`로 가져와 작업하도록 구성했습니다.
 
 ## 작업 순서
 
