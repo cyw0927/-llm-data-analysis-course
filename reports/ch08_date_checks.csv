@@ -1,0 +1,2 @@
+﻿check,invalid_count,affected_amount,status
+completed rows with invalid order_date,0,0.0,PASS

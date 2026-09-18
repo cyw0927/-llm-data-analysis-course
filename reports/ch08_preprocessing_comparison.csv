@@ -1,0 +1,5 @@
+﻿dataset,rows_raw,columns_raw,rows_processed,columns_processed
+customers,150,6,150,6
+order_items,764,5,764,6
+orders,300,5,300,7
+products,100,4,100,4

@@ -1,0 +1,5 @@
+﻿dataset,rows,columns,missing_values,duplicated_rows
+customers,150,6,0,0
+products,100,4,0,0
+orders,300,5,0,0
+order_items,764,5,0,0

@@ -1,0 +1,5 @@
+﻿source,amount,difference_from_completed,matches_completed,status
+completed_source,148990000.0,0.0,True,PASS
+category,148990000.0,0.0,True,PASS
+monthly,148990000.0,0.0,True,PASS
+customer,148990000.0,0.0,True,PASS

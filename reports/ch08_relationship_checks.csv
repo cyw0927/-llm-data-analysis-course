@@ -1,0 +1,4 @@
+﻿check,invalid_count,status
+orders.customer_id exists in customers.customer_id,0,PASS
+order_items.order_id exists in orders.order_id,0,PASS
+order_items.product_id exists in products.product_id,0,PASS

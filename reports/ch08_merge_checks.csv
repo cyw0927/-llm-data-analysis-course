@@ -1,0 +1,4 @@
+﻿merge,validate,before_rows,after_rows,row_count_preserved,unmatched_count,status
+order_id → orders,many_to_one,764,764,True,0,PASS
+product_id → products,many_to_one,474,474,True,0,PASS
+customer_id → customers,one_to_one,100,100,True,0,PASS

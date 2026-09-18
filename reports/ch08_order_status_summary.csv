@@ -1,0 +1,4 @@
+﻿order_status,order_count,order_ratio
+completed,184,61.33
+cancelled,64,21.33
+refunded,52,17.33

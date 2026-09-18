@@ -1,0 +1,4 @@
+﻿scope,amount,detail_rows
+all_order_items,255610000.0,764
+completed_order_items,148990000.0,474
+excluded_non_completed,106620000.0,290
