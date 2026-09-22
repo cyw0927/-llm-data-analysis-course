@@ -3,19 +3,14 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import streamlit as st
-from kiwipiepy import Kiwi
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.naive_bayes import MultinomialNB
 
 
 BASE_DIR = Path(__file__).resolve().parent
-IMPROVED_PATH = BASE_DIR / "books_improved.csv"
-FALLBACK_PATH = BASE_DIR / "book_bestseller_clean.csv"
-
-TARGET_TAGS = {"NNG", "NNP", "SL"}
-MIN_LENGTH = 2
-STOPWORDS = {"에디션"}
+CSV_PATH = BASE_DIR / "book_bestseller_clean.csv"
+XLSX_PATH = BASE_DIR / "교보문고_종합_베스트셀러_상품리스트.xlsx"
 
 
 st.set_page_config(
@@ -25,59 +20,24 @@ st.set_page_config(
 )
 
 
-@st.cache_resource(show_spinner=False)
-def get_kiwi():
-    return Kiwi()
-
-
-def preprocess_title(text):
-    """Kiwi 형태소 분석 + 최소 필터링으로 제목을 정제합니다."""
-    kiwi = get_kiwi()
-
-    words = []
-
-    for token in kiwi.tokenize(str(text)):
-        if token.tag not in TARGET_TAGS:
-            continue
-
-        word = token.form.strip().lower()
-
-        if len(word) < MIN_LENGTH:
-            continue
-
-        if word.isdigit():
-            continue
-
-        if word in STOPWORDS:
-            continue
-
-        words.append(word)
-
-    return " ".join(words)
-
-
-def normalize_columns(df):
+def _normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """앱에서 사용하는 핵심 컬럼을 정리합니다."""
     df = df.copy()
 
+    # 원본/전처리 파일에서 저자 컬럼 이름이 다를 수 있어 통일합니다.
     if "저자" not in df.columns and "인물" in df.columns:
-        df = df.rename(
-            columns={"인물": "저자"}
-        )
+        df = df.rename(columns={"인물": "저자"})
 
-    required_columns = [
-        "상품명",
-        "분야",
-    ]
-
+    required_columns = ["상품명", "분야"]
     missing_columns = [
-        col
-        for col in required_columns
+        col for col in required_columns
         if col not in df.columns
     ]
 
     if missing_columns:
         raise ValueError(
-            f"필수 컬럼이 없습니다: {missing_columns}"
+            "필수 컬럼이 없습니다: "
+            + ", ".join(missing_columns)
         )
 
     df["상품명"] = (
@@ -89,65 +49,81 @@ def normalize_columns(df):
 
     df["분야"] = (
         df["분야"]
-        .fillna("")
+        .fillna("미분류")
         .astype(str)
         .str.strip()
+        .replace("", "미분류")
     )
 
+    if "저자" in df.columns:
+        df["저자"] = (
+            df["저자"]
+            .fillna("")
+            .astype(str)
+            .str.strip()
+        )
+
+    if "출판사" in df.columns:
+        df["출판사"] = (
+            df["출판사"]
+            .fillna("")
+            .astype(str)
+            .str.strip()
+        )
+
+    # 빈 제목은 사용할 수 없으므로 제외합니다.
     df = (
-        df[
-            (df["상품명"] != "") &
-            (df["분야"] != "")
-        ]
+        df[df["상품명"] != ""]
         .reset_index(drop=True)
     )
 
     if df.empty:
         raise ValueError(
-            "사용할 수 있는 도서 데이터가 없습니다."
+            "사용할 수 있는 도서 제목이 없습니다."
         )
 
     return df
 
 
 @st.cache_data(show_spinner=False)
-def load_data():
-    if IMPROVED_PATH.exists():
-        path = IMPROVED_PATH
-        source = IMPROVED_PATH.name
-        improved = True
+def load_data() -> pd.DataFrame:
+    """CSV를 우선 사용하고, 없으면 원본 Excel을 자동으로 사용합니다."""
+    if CSV_PATH.exists():
+        df = pd.read_csv(
+            CSV_PATH,
+            encoding="utf-8-sig",
+        )
+        source = CSV_PATH.name
 
-    elif FALLBACK_PATH.exists():
-        path = FALLBACK_PATH
-        source = FALLBACK_PATH.name
-        improved = False
+    elif XLSX_PATH.exists():
+        df = pd.read_excel(
+            XLSX_PATH,
+        )
+        source = XLSX_PATH.name
 
     else:
         raise FileNotFoundError(
-            "books_improved.csv 또는 book_bestseller_clean.csv를 "
-            f"{BASE_DIR}에서 찾지 못했습니다."
+            "도서 데이터 파일을 찾지 못했습니다.\n"
+            f"- CSV: {CSV_PATH}\n"
+            f"- Excel: {XLSX_PATH}"
         )
 
-    df = pd.read_csv(
-        path,
-        encoding="utf-8-sig",
-    )
-
-    df = normalize_columns(df)
-
-    return df, source, improved
+    df = _normalize_columns(df)
+    return df, source
 
 
 @st.cache_resource(show_spinner=False)
-def train_classifier():
-    df, _, _ = load_data()
-
-    train_df = df.copy()
-
-    train_df["상품명_정제"] = (
-        train_df["상품명"]
-        .apply(preprocess_title)
+def train_classifier(df: pd.DataFrame):
+    """앱 시연용 최종 분류 모델을 학습합니다."""
+    train_df = (
+        df[df["분야"] != "미분류"]
+        .copy()
     )
+
+    if train_df.empty:
+        raise ValueError(
+            "분류 모델을 학습할 라벨 데이터가 없습니다."
+        )
 
     if train_df["분야"].nunique() < 2:
         raise ValueError(
@@ -157,7 +133,7 @@ def train_classifier():
     vectorizer = TfidfVectorizer()
 
     X = vectorizer.fit_transform(
-        train_df["상품명_정제"]
+        train_df["상품명"]
     )
 
     if X.shape[1] == 0:
@@ -166,7 +142,6 @@ def train_classifier():
         )
 
     model = MultinomialNB()
-
     model.fit(
         X,
         train_df["분야"],
@@ -176,18 +151,12 @@ def train_classifier():
 
 
 @st.cache_resource(show_spinner=False)
-def build_recommender():
-    df, _, _ = load_data()
-
-    processed_titles = (
-        df["상품명"]
-        .apply(preprocess_title)
-    )
-
+def build_recommender(df: pd.DataFrame):
+    """전체 도서 제목을 추천용 TF-IDF 행렬로 변환합니다."""
     vectorizer = TfidfVectorizer()
 
     title_matrix = vectorizer.fit_transform(
-        processed_titles
+        df["상품명"]
     )
 
     if title_matrix.shape[1] == 0:
@@ -199,11 +168,12 @@ def build_recommender():
 
 
 def recommend_books(
-    df,
+    df: pd.DataFrame,
     title_matrix,
-    selected_index,
-    top_n=5,
-):
+    selected_index: int,
+    top_n: int = 5,
+) -> pd.DataFrame:
+    """선택 도서와 제목 TF-IDF가 비슷한 다른 도서를 추천합니다."""
     if top_n < 1:
         raise ValueError(
             "top_n은 1 이상이어야 합니다."
@@ -219,19 +189,7 @@ def recommend_books(
             "DataFrame 행 수와 추천 행렬 행 수가 다릅니다."
         )
 
-    selected_title = df.iloc[
-        selected_index
-    ]["상품명"]
-
-    selected_category = df.iloc[
-        selected_index
-    ]["분야"]
-
-    candidate_indices = np.where(
-        df["분야"].to_numpy()
-        == selected_category
-    )[0]
-
+    # 1행 슬라이스로 가져와 SciPy 버전에 관계없이 2차원 형태를 유지합니다.
     selected_vector = title_matrix[
         selected_index:selected_index + 1
     ]
@@ -241,24 +199,25 @@ def recommend_books(
         title_matrix,
     ).ravel()
 
-    sorted_candidates = candidate_indices[
-        np.argsort(
-            similarities[candidate_indices]
-        )[::-1]
-    ]
+    selected_title = df.iloc[
+        selected_index
+    ]["상품명"]
+
+    sorted_indices = np.argsort(
+        similarities
+    )[::-1]
 
     recommended_indices = []
 
-    for idx in sorted_candidates:
+    for idx in sorted_indices:
         idx = int(idx)
 
+        # 자기 자신 제외
         if idx == selected_index:
             continue
 
+        # 같은 제목이 중복 등록된 경우도 제외
         if df.iloc[idx]["상품명"] == selected_title:
-            continue
-
-        if similarities[idx] <= 0:
             continue
 
         recommended_indices.append(idx)
@@ -295,61 +254,42 @@ def recommend_books(
 
 
 try:
-    df, data_source, using_improved_data = load_data()
+    df, data_source = load_data()
 
     classifier_vectorizer, classifier_model = (
-        train_classifier()
+        train_classifier(df)
     )
 
-    _, title_matrix = build_recommender()
+    _, title_matrix = build_recommender(df)
 
 except Exception as error:
-    st.error(
-        "앱 준비 중 오류가 발생했습니다."
-    )
+    st.error("앱 준비 중 오류가 발생했습니다.")
     st.exception(error)
     st.stop()
 
 
-st.title(
-    "📚 교보문고 베스트셀러 텍스트 분석 앱"
-)
+st.title("📚 교보문고 베스트셀러 텍스트 분석 앱")
 
 st.write(
-    "Kiwi 한국어 형태소 분석을 적용한 분야 예측과 "
-    "근거가 있는 유사 도서 추천을 실습합니다."
+    "도서 제목으로 분야를 예측하고, "
+    "기존 도서와 제목이 비슷한 책을 추천합니다."
 )
 
-if not using_improved_data:
-    st.warning(
-        "books_improved.csv를 찾지 못해 "
-        "book_bestseller_clean.csv를 사용 중입니다. "
-        "Chapter 07 실험과 같은 결과를 내려면 "
-        "books_improved.csv를 app.py와 같은 폴더에 두세요."
-    )
-
-with st.expander(
-    "현재 데이터/모델 상태",
-    expanded=False,
-):
+with st.expander("현재 데이터 상태", expanded=False):
+    st.write(f"데이터 파일: **{data_source}**")
+    st.write(f"도서 수: **{len(df)}권**")
+    st.write(f"분야 수: **{df['분야'].nunique()}개**")
     st.write(
-        f"데이터 파일: **{data_source}**"
+        f"분류 TF-IDF feature 수: "
+        f"**{len(classifier_vectorizer.get_feature_names_out())}개**"
     )
     st.write(
-        f"도서 수: **{len(df)}권**"
-    )
-    st.write(
-        f"분야 수: **{df['분야'].nunique()}개**"
-    )
-    st.write(
-        "전처리: **Kiwi NNG/NNP/SL + "
-        "2글자 이상 + 숫자 제외 + 에디션 제외**"
+        f"추천 TF-IDF matrix: "
+        f"**{title_matrix.shape[0]} × {title_matrix.shape[1]}**"
     )
 
 
-st.header(
-    "1. 도서 분야 예측"
-)
+st.header("1. 도서 분야 예측")
 
 user_title = st.text_input(
     "도서 제목을 입력하세요",
@@ -368,63 +308,42 @@ if st.button(
         )
 
     else:
-        processed_title = preprocess_title(
-            clean_title
+        title_vector = (
+            classifier_vectorizer
+            .transform([clean_title])
         )
 
-        if not processed_title:
-            st.warning(
-                "형태소 분석 후 사용할 수 있는 핵심 토큰이 없습니다."
-            )
+        predicted_category = (
+            classifier_model
+            .predict(title_vector)[0]
+        )
 
-        else:
-            title_vector = (
-                classifier_vectorizer
-                .transform(
-                    [processed_title]
-                )
-            )
+        probabilities = (
+            classifier_model
+            .predict_proba(title_vector)[0]
+        )
 
-            predicted_category = (
-                classifier_model
-                .predict(title_vector)[0]
-            )
+        best_probability = float(
+            probabilities.max()
+        )
 
-            probabilities = (
-                classifier_model
-                .predict_proba(title_vector)[0]
-            )
+        st.success(
+            f"예상 분야: {predicted_category}"
+        )
 
-            best_probability = float(
-                probabilities.max()
-            )
-
-            st.success(
-                f"예상 분야: {predicted_category}"
-            )
-
-            st.caption(
-                "모델의 가장 높은 예측 확률: "
-                f"{best_probability:.1%}"
-            )
-
-            with st.expander(
-                "형태소 분석 결과 보기"
-            ):
-                st.code(
-                    processed_title
-                )
+        st.caption(
+            "모델의 가장 높은 예측 확률: "
+            f"{best_probability:.1%}"
+        )
 
 
 st.divider()
 
 
-st.header(
-    "2. 비슷한 도서 추천"
-)
+st.header("2. 비슷한 도서 추천")
 
 
-def format_book(index):
+def format_book(index: int) -> str:
     row = df.iloc[index]
 
     title = str(
@@ -438,24 +357,18 @@ def format_book(index):
     )
 
     if author and author.lower() != "nan":
-        return (
-            f"{index} | {title} | {author}"
-        )
+        return f"{index} | {title} | {author}"
 
-    return (
-        f"{index} | {title}"
-    )
+    return f"{index} | {title}"
 
 
 selected_index = st.selectbox(
     "기준 도서를 선택하세요",
-    options=list(
-        range(len(df))
-    ),
+    options=list(range(len(df))),
     format_func=format_book,
 )
 
-selected_columns = [
+selected_book_columns = [
     col
     for col in [
         "상품명",
@@ -466,46 +379,33 @@ selected_columns = [
     if col in df.columns
 ]
 
-st.caption(
-    "선택한 도서"
-)
-
+st.caption("선택한 도서")
 st.dataframe(
-    df.iloc[
-        [selected_index]
-    ][selected_columns],
+    df.iloc[[selected_index]][selected_book_columns],
     hide_index=True,
     use_container_width=True,
 )
 
 if st.button(
-    "비슷한 도서 최대 5권 추천",
+    "비슷한 도서 5권 추천",
     type="primary",
 ):
     recommendations = recommend_books(
         df=df,
         title_matrix=title_matrix,
-        selected_index=int(
-            selected_index
-        ),
+        selected_index=int(selected_index),
         top_n=5,
     )
 
     if recommendations.empty:
-        st.info(
-            "현재 기준으로 유사도가 있는 추천 도서를 찾지 못했습니다."
+        st.warning(
+            "추천할 수 있는 다른 도서가 없습니다."
         )
-
     else:
         st.dataframe(
             recommendations,
             hide_index=True,
             use_container_width=True,
-        )
-
-        st.caption(
-            "같은 분야 안에서 제목 TF-IDF 코사인 유사도가 "
-            "0보다 큰 도서만 표시합니다."
         )
 
 
@@ -517,10 +417,6 @@ st.caption(
 )
 
 st.caption(
-    "추천은 같은 분야의 제목 TF-IDF 유사도에 기반하며 "
-    "유사도 0인 책은 억지로 Top 5에 포함하지 않습니다."
-)
-
-st.caption(
-    "추천 결과가 없거나 5권 미만이어도 정상적인 결과입니다."
+    "추천 결과는 제목 TF-IDF 코사인 유사도에 기반하며 "
+    "개별 사용자의 취향을 직접 반영하지 않습니다."
 )
