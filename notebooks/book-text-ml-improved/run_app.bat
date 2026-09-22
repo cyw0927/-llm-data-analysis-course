@@ -22,7 +22,7 @@ if errorlevel 1 goto :error
 
 echo.
 echo [2/3] Chapter 07 패키지 확인
-%PYTHON% -c "import pandas, numpy, sklearn, streamlit, kiwipiepy" >nul 2>nul
+%PYTHON% -c "import pandas, numpy, streamlit, kiwipiepy" >nul 2>nul
 if errorlevel 1 (
     echo 필요한 패키지를 설치합니다...
     %PYTHON% -m pip install -r requirements.txt
@@ -31,6 +31,7 @@ if errorlevel 1 (
 
 echo.
 echo [3/3] Chapter 07 Streamlit 앱 실행
+echo SciPy/scikit-learn은 사용하지 않습니다.
 echo 브라우저가 자동으로 열리지 않으면 http://localhost:8501 을 여세요.
 %PYTHON% -m streamlit run app.py
 goto :end
