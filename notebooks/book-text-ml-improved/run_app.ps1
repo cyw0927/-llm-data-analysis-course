@@ -23,7 +23,7 @@ Write-Host "[1/3] Python 확인"
 
 Write-Host ""
 Write-Host "[2/3] Chapter 07 패키지 확인"
-& $python @pythonArgs -c "import pandas, numpy, sklearn, streamlit, kiwipiepy"
+& $python @pythonArgs -c "import pandas, numpy, streamlit, kiwipiepy"
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "필요한 패키지를 설치합니다..."
@@ -36,6 +36,7 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host ""
 Write-Host "[3/3] Chapter 07 Streamlit 앱 실행"
+Write-Host "SciPy/scikit-learn은 사용하지 않습니다."
 Write-Host "브라우저가 자동으로 열리지 않으면 http://localhost:8501 을 여세요."
 
 & $python @pythonArgs -m streamlit run app.py
