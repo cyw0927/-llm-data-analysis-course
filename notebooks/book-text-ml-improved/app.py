@@ -4,9 +4,12 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 from kiwipiepy import Kiwi
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.naive_bayes import MultinomialNB
+
+from ml_compat import (
+    TfidfVectorizer,
+    MultinomialNB,
+    cosine_similarity,
+)
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -26,10 +29,12 @@ st.set_page_config(
 
 @st.cache_resource(show_spinner=False)
 def get_kiwi():
+    """Kiwi 객체는 한 번만 생성해서 재사용합니다."""
     return Kiwi()
 
 
 def preprocess_title(text):
+    """Kiwi 형태소 분석 + 최소 필터링으로 제목을 정제합니다."""
     kiwi = get_kiwi()
     words = []
 
@@ -55,6 +60,7 @@ def preprocess_title(text):
 
 @st.cache_data(show_spinner=False)
 def load_data():
+    """현재 폴더의 book_improved.csv를 읽고 기본 정리를 합니다."""
     if not DATA_PATH.exists():
         raise FileNotFoundError(
             f"데이터 파일을 찾지 못했습니다: {DATA_PATH}"
@@ -92,6 +98,7 @@ def load_data():
         .str.strip()
     )
 
+    # 현재 CSV의 '인물' 컬럼을 앱에서는 '저자'로 함께 사용합니다.
     if "저자" not in df.columns and "인물" in df.columns:
         df["저자"] = (
             df["인물"]
@@ -124,8 +131,12 @@ def load_data():
     return df
 
 
-@st.cache_resource(show_spinner=False)
-def train_classifier():
+@st.cache_data(show_spinner=False)
+def prepare_data():
+    """
+    Kiwi 전처리는 시간이 걸리므로 최초 1회만 실행하고 캐시에 저장합니다.
+    앱 첫 화면에서는 호출하지 않아서 화면이 바로 나타납니다.
+    """
     df = load_data().copy()
 
     df["상품명_정제"] = (
@@ -133,7 +144,15 @@ def train_classifier():
         .apply(preprocess_title)
     )
 
-    if df["분야"].nunique() < 2:
+    return df
+
+
+@st.cache_resource(show_spinner=False)
+def train_classifier():
+    """전처리된 전체 데이터로 앱 시연용 분류 모델을 준비합니다."""
+    prepared_df = prepare_data()
+
+    if prepared_df["분야"].nunique() < 2:
         raise ValueError(
             "분류에는 서로 다른 분야가 2개 이상 필요합니다."
         )
@@ -141,7 +160,7 @@ def train_classifier():
     vectorizer = TfidfVectorizer()
 
     X = vectorizer.fit_transform(
-        df["상품명_정제"]
+        prepared_df["상품명_정제"]
     )
 
     if X.shape[1] == 0:
@@ -153,7 +172,7 @@ def train_classifier():
 
     model.fit(
         X,
-        df["분야"],
+        prepared_df["분야"],
     )
 
     return vectorizer, model
@@ -161,17 +180,13 @@ def train_classifier():
 
 @st.cache_resource(show_spinner=False)
 def build_recommender():
-    df = load_data().copy()
-
-    processed_titles = (
-        df["상품명"]
-        .apply(preprocess_title)
-    )
+    """전처리된 제목으로 추천용 TF-IDF 행렬을 만듭니다."""
+    prepared_df = prepare_data()
 
     vectorizer = TfidfVectorizer()
 
     title_matrix = vectorizer.fit_transform(
-        processed_titles
+        prepared_df["상품명_정제"]
     )
 
     if title_matrix.shape[1] == 0:
@@ -188,6 +203,7 @@ def recommend_books(
     selected_index,
     top_n=5,
 ):
+    """같은 분야에서 유사도가 0보다 큰 도서만 추천합니다."""
     if top_n < 1:
         raise ValueError(
             "top_n은 1 이상이어야 합니다."
@@ -229,12 +245,15 @@ def recommend_books(
     for idx in sorted_candidates:
         idx = int(idx)
 
+        # 자기 자신 제외
         if idx == selected_index:
             continue
 
+        # 동일 제목 중복 제외
         if df.iloc[idx]["상품명"] == selected_title:
             continue
 
+        # 유사도 0 이하 제외
         if similarities[idx] <= 0:
             continue
 
@@ -271,22 +290,10 @@ def recommend_books(
     return result
 
 
-try:
-    df = load_data()
-
-    classifier_vectorizer, classifier_model = (
-        train_classifier()
-    )
-
-    _, title_matrix = build_recommender()
-
-except Exception as error:
-    st.error(
-        "앱 준비 중 오류가 발생했습니다."
-    )
-    st.exception(error)
-    st.stop()
-
+# ------------------------------------------------------------
+# 여기부터 화면을 먼저 그립니다.
+# 무거운 Kiwi 전처리/모델 학습은 버튼을 눌렀을 때만 실행합니다.
+# ------------------------------------------------------------
 
 st.title(
     "📚 도서 텍스트 분석 개선 앱"
@@ -297,28 +304,47 @@ st.write(
     "같은 분야 내 유사 도서 추천을 실행합니다."
 )
 
+try:
+    df = load_data()
+
+except Exception as error:
+    st.error(
+        "데이터를 불러오는 중 오류가 발생했습니다."
+    )
+    st.exception(error)
+    st.stop()
+
+
 with st.expander(
     "현재 데이터 상태",
-    expanded=False,
+    expanded=True,
 ):
-    st.write(
-        f"데이터 파일: **{DATA_PATH.name}**"
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric(
+        "도서 수",
+        f"{len(df)}권",
     )
-    st.write(
-        f"도서 수: **{len(df)}권**"
+
+    col2.metric(
+        "분야 수",
+        f"{df['분야'].nunique()}개",
     )
-    st.write(
-        f"분야 수: **{df['분야'].nunique()}개**"
+
+    col3.metric(
+        "데이터 파일",
+        DATA_PATH.name,
     )
 
     counts = (
         df["분야"]
         .value_counts()
         .sort_index()
+        .rename("도서 수")
     )
 
     st.dataframe(
-        counts.rename("도서 수"),
+        counts,
         use_container_width=True,
     )
 
@@ -335,6 +361,7 @@ user_title = st.text_input(
 if st.button(
     "분야 예측",
     type="primary",
+    key="predict_button",
 ):
     clean_title = user_title.strip()
 
@@ -344,42 +371,56 @@ if st.button(
         )
 
     else:
-        processed_title = preprocess_title(
-            clean_title
-        )
-
-        if not processed_title:
-            st.warning(
-                "형태소 분석 후 사용할 수 있는 핵심 토큰이 없습니다."
-            )
-
-        else:
-            vector = classifier_vectorizer.transform(
-                [processed_title]
-            )
-
-            prediction = classifier_model.predict(
-                vector
-            )[0]
-
-            probabilities = classifier_model.predict_proba(
-                vector
-            )[0]
-
-            st.success(
-                f"예상 분야: {prediction}"
-            )
-
-            st.caption(
-                f"가장 높은 예측 확률: {float(probabilities.max()):.1%}"
-            )
-
-            with st.expander(
-                "형태소 분석 결과"
+        try:
+            with st.spinner(
+                "처음 실행입니다. 900권 제목을 Kiwi로 분석하고 모델을 준비하는 중입니다..."
             ):
-                st.code(
-                    processed_title
+                classifier_vectorizer, classifier_model = (
+                    train_classifier()
                 )
+
+            processed_title = preprocess_title(
+                clean_title
+            )
+
+            if not processed_title:
+                st.warning(
+                    "형태소 분석 후 사용할 수 있는 핵심 토큰이 없습니다."
+                )
+
+            else:
+                vector = classifier_vectorizer.transform(
+                    [processed_title]
+                )
+
+                prediction = classifier_model.predict(
+                    vector
+                )[0]
+
+                probabilities = classifier_model.predict_proba(
+                    vector
+                )[0]
+
+                st.success(
+                    f"예상 분야: {prediction}"
+                )
+
+                st.caption(
+                    f"가장 높은 예측 확률: {float(probabilities.max()):.1%}"
+                )
+
+                with st.expander(
+                    "형태소 분석 결과"
+                ):
+                    st.code(
+                        processed_title
+                    )
+
+        except Exception as error:
+            st.error(
+                "분야 예측 준비 또는 실행 중 오류가 발생했습니다."
+            )
+            st.exception(error)
 
 
 st.divider()
@@ -443,32 +484,47 @@ st.dataframe(
 if st.button(
     "비슷한 도서 최대 5권 추천",
     type="primary",
+    key="recommend_button",
 ):
-    recommendations = recommend_books(
-        df=df,
-        title_matrix=title_matrix,
-        selected_index=int(
-            selected_index
-        ),
-        top_n=5,
-    )
+    try:
+        with st.spinner(
+            "추천 모델을 준비하는 중입니다. 첫 실행만 조금 걸릴 수 있습니다..."
+        ):
+            _, title_matrix = (
+                build_recommender()
+            )
 
-    if recommendations.empty:
-        st.info(
-            "현재 기준으로 유사도가 있는 추천 도서를 찾지 못했습니다."
+        recommendations = recommend_books(
+            df=df,
+            title_matrix=title_matrix,
+            selected_index=int(
+                selected_index
+            ),
+            top_n=5,
         )
 
-    else:
-        st.dataframe(
-            recommendations,
-            hide_index=True,
-            use_container_width=True,
-        )
+        if recommendations.empty:
+            st.info(
+                "현재 기준으로 유사도가 있는 추천 도서를 찾지 못했습니다."
+            )
 
-        st.caption(
-            "같은 분야 안에서 TF-IDF 코사인 유사도가 "
-            "0보다 큰 도서만 표시합니다."
+        else:
+            st.dataframe(
+                recommendations,
+                hide_index=True,
+                use_container_width=True,
+            )
+
+            st.caption(
+                "같은 분야 안에서 TF-IDF 코사인 유사도가 "
+                "0보다 큰 도서만 표시합니다."
+            )
+
+    except Exception as error:
+        st.error(
+            "추천 준비 또는 실행 중 오류가 발생했습니다."
         )
+        st.exception(error)
 
 
 st.divider()
