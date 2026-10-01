@@ -3,11 +3,11 @@
 실행 방법:
     python scripts/preprocess_data.py
 
-입력(Chapter 05 전용 전처리 전 데이터):
-    practice/chapter05/data/raw/customers.csv
-    practice/chapter05/data/raw/products.csv
-    practice/chapter05/data/raw/orders.csv
-    practice/chapter05/data/raw/order_items.csv
+입력(현재 저장소 공통 Raw 데이터):
+    data/raw/customers.csv
+    data/raw/products.csv
+    data/raw/orders.csv
+    data/raw/order_items.csv
 
 출력:
     data/processed/customers_clean.csv
@@ -17,9 +17,9 @@
     reports/ch05_preprocessing_summary.md
 
 주의:
-    프로젝트 공통 data/raw는 변경하지 않습니다. Chapter 05 실습에서는 문자열 표기,
-    타입 변환 실패, 결측, 중복, 이상값 후보, PK/FK 관계 문제 등이 의도적으로 포함된
-    전용 Raw Dataset을 사용합니다.
+    이 저장소에는 공식 Chapter 05 전용 Raw 폴더가 없으므로 공통 data/raw를 사용해
+    data/processed를 재생성합니다. Chapter 11 분석 자체는 processed 입력만 사용하며
+    raw로 자동 fallback하지 않습니다.
 """
 
 from pathlib import Path
@@ -40,14 +40,14 @@ from src.preprocessing import (
 )
 
 
-RAW_DIR = PROJECT_ROOT / "practice" / "chapter05" / "data" / "raw"
+RAW_DIR = PROJECT_ROOT / "data" / "raw"
 PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
 REPORT_DIR = PROJECT_ROOT / "reports"
 REPORT_PATH = REPORT_DIR / "ch05_preprocessing_summary.md"
 
 
 def main() -> None:
-    """Chapter 05 전용 Raw 데이터를 전처리하고 결과 파일과 요약 보고서를 저장합니다."""
+    """공통 Raw 데이터를 전처리해 Chapter 11용 processed 입력을 준비합니다."""
     REPORT_DIR.mkdir(exist_ok=True)
 
     raw_data = load_sales_data(RAW_DIR)
