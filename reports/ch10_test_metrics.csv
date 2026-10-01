@@ -1,0 +1,2 @@
+﻿evaluation_split,threshold,selection_status,accuracy,precision,recall,f1
+test,0.2,frozen_before_test,0.28,0.24444444444444444,0.8461538461538461,0.3793103448275862
