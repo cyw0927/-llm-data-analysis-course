@@ -370,11 +370,12 @@ def build_classification_dataset(
     ).dt.days
 
     negative_days = model_data["days_since_signup"].lt(0)
-    if negative_days.any():
-        raise ValueError(
-            "signup_date가 order_date보다 늦은 주문이 있습니다: "
-            f"{int(negative_days.sum())}건"
-        )
+    negative_days_count = int(negative_days.sum())
+    if negative_days_count:
+        # 원본 날짜를 임의로 수정하거나 행을 삭제하지 않습니다.
+        # 시간 관계가 모순된 경우 파생 feature만 신뢰할 수 없는 값으로 처리하고,
+        # 이후 숫자형 Pipeline의 Train-only median imputation에 맡깁니다.
+        model_data.loc[negative_days, "days_since_signup"] = np.nan
 
     numeric_features = [
         column
@@ -415,7 +416,7 @@ def build_classification_dataset(
                 int(model_data[TARGET_COLUMN].eq(1).sum()),
                 excluded_rows,
                 0,
-                0,
+                negative_days_count,
                 order_merge_check["unmatched_count"],
                 customer_merge_check["unmatched_count"],
             ],
