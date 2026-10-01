@@ -26,6 +26,10 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
+      - name: Prepare validated Chapter 10 input
+        run: |
+          python scripts/prepare_ch10_data.py
+
       - name: Execute Chapter 10 notebook
         env:
           MPLBACKEND: Agg
@@ -40,7 +44,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assignments/chapter10/chapter10.ipynb assignments/chapter10/images reports/ch10_*
+          git add assignments/chapter10/chapter10.ipynb assignments/chapter10/images reports/ch10_* data/processed/*_clean.csv
           if git diff --cached --quiet; then
             echo "No generated changes to commit"
           else
