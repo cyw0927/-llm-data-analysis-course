@@ -51,3 +51,5 @@ jobs:
             git commit -m "Execute Chapter 10 classification assignment"
             git push
           fi
+
+# rerun: 3
