@@ -1,6 +1,6 @@
-# Chapter 11 LLM 프롬프트 사용 기록 템플릿
+# Chapter 11 LLM 프롬프트 사용 기록
 
-> 이 파일은 자동 생성된 **빈 기록 템플릿**입니다. `execution_status=not_executed` 행은 실제 LLM 사용 증거가 아닙니다.
+> 이 파일은 자동 생성 템플릿을 바탕으로 실제 사용 행을 반영한 기록입니다. `execution_status=executed` 행만 실제 LLM 사용 기록이며, `not_executed` 행은 사용 증거가 아닙니다.
 
 ## 사용 원칙
 
