@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          python -m pip install pandas matplotlib nbconvert ipykernel
 
       - name: Prepare Chapter 11 processed input
         run: |
@@ -52,4 +52,4 @@ jobs:
             git push
           fi
 
-# rerun: 2
+# rerun: 3
