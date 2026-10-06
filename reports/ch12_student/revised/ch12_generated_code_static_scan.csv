@@ -1,0 +1,2 @@
+﻿line,rule,severity,detail
+35,file_write,review,.to_csv() 파일 저장

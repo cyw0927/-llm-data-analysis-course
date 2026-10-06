@@ -1,0 +1,6 @@
+﻿item,llm_draft,human_revision,reason,execution_approved
+주문 상태 범위,상태 필터 없이 모든 주문 상세를 합산,orders에서 completed만 남겨 inner merge (validate='many_to_one'),"모든 상태 합계 255,610,000 vs completed 148,990,000 - 취소/환불 주문이 매출에 섞임",True
+merge 검증,"how='left' merge, validate/indicator 없음",validate='many_to_one' + indicator=True + assert 'both'/category 결측 없음,key가 중복되거나 매칭이 안 되어도 에러 없이 행/금액이 달라질 수 있음,True
+금액 계산식,quantity * products.price,order_items.line_total 사용 + line_total == quantity*unit_price assert,"지금은 price/unit_price 불일치 0건이지만, 상품 가격이 바뀌면 과거 주문 금액이 틀려짐",True
+입력 가정 검증,orders/products key 고유성 확인 없음,"orders.order_id, products.product_id 고유성 assert 추가",고유하지 않으면 many_to_one 가정이 깨져 금액이 중복 집계됨,True
+출력 경로,"C:/reports/category_sales.csv (절대 경로, 기존 파일 덮어쓰기 가능)",output/category_sales.csv (승인된 output 폴더 안의 상대 경로),허용 경로 밖 쓰기를 막고 실행 전후 변경 비교를 가능하게 함,True

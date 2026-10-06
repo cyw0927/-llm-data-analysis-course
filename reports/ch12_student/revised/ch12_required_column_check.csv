@@ -1,0 +1,5 @@
+﻿dataset,required_count,missing_columns,status
+customers,5,-,PASS
+products,3,-,PASS
+orders,5,-,PASS
+order_items,6,-,PASS

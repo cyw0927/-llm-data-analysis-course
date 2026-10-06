@@ -1,0 +1,8 @@
+﻿axis,status,evidence
+schema_and_keys,PASS,필수 컬럼/PK/FK 검증 통과
+aggregate_validation,PASS,source total = category total = monthly total
+ml_leakage,REVIEW,FORBIDDEN 0건 / REVIEW 6건
+static_scan,REVIEW,revised_category_sales.py: findings 1건
+sandbox_and_package,REVIEW,체크리스트 전 항목 REVIEW (자동으로 PASS 만들지 않음)
+human_approval,PENDING,사람 승인 전
+execution_decision,HUMAN_REVIEW_REQUIRED,

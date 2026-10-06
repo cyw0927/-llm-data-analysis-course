@@ -1,0 +1,5 @@
+﻿line,rule,severity,detail
+2,network_import,high,네트워크 모듈 import: requests
+4,hardcoded_secret,critical,api_key에 문자열 값이 직접 들어 있음
+8,file_write,review,.to_csv() 파일 저장
+10,network_request,high,requests.post() 호출

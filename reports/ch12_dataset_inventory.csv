@@ -1,0 +1,5 @@
+﻿dataset,file,rows,columns,column_names
+customers,customers_clean.csv,150,6,"customer_id, name, gender, age, city, signup_date"
+products,products_clean.csv,100,4,"product_id, product_name, category, price"
+orders,orders_clean.csv,300,7,"order_id, customer_id, order_date, payment_method, order_status, order_month, order_dayofweek"
+order_items,order_items_clean.csv,764,6,"order_item_id, order_id, product_id, quantity, unit_price, line_total"

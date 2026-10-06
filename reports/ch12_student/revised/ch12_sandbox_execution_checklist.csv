@@ -1,0 +1,10 @@
+﻿item,what_to_check,status
+복사한 소량 샘플만 사용,운영 데이터가 아니라 복사본인지 확인,REVIEW
+input read-only 적용,입력 파일이 읽기 전용으로 바뀌었는지 확인,REVIEW
+API Key / DB password / cloud credential 없음,실행 환경 변수에 Secret이 없는지 확인,REVIEW
+disposable environment,실행 후 지워도 되는 폴더인지 확인,REVIEW
+쓰기 경로 allowlist,output 폴더 밖에 쓰기가 없는지 확인,REVIEW
+network deny by default,"네트워크 호출 코드가 없는지, OS 수준 차단이 되는지 확인",REVIEW
+CPU / memory / timeout / process / disk limit,어떤 제한을 실제로 걸었는지 확인,REVIEW
+실행 전 baseline 기록,실행 전 파일 목록/hash/크기 저장,REVIEW
+실행 후 변경 비교,실행 후 생성/수정/삭제 파일 비교,REVIEW

@@ -1,0 +1,11 @@
+﻿question,status,initial_decision
+정말 필요한가?,REVIEW,DO_NOT_INSTALL_UNTIL_REVIEWED
+공식 package 이름과 source인가?,REVIEW,DO_NOT_INSTALL_UNTIL_REVIEWED
+typosquatting 위험은 없는가?,REVIEW,DO_NOT_INSTALL_UNTIL_REVIEWED
+exact version을 고정했는가?,REVIEW,DO_NOT_INSTALL_UNTIL_REVIEWED
+Python 호환성을 확인했는가?,REVIEW,DO_NOT_INSTALL_UNTIL_REVIEWED
+transitive dependency를 검토했는가?,REVIEW,DO_NOT_INSTALL_UNTIL_REVIEWED
+install script를 검토했는가?,REVIEW,DO_NOT_INSTALL_UNTIL_REVIEWED
+격리 환경인가?,REVIEW,DO_NOT_INSTALL_UNTIL_REVIEWED
+requirements / lock에 기록하는가?,REVIEW,DO_NOT_INSTALL_UNTIL_REVIEWED
+조직 정책에 맞는가?,REVIEW,DO_NOT_INSTALL_UNTIL_REVIEWED

@@ -1,0 +1,13 @@
+﻿check_item,status
+Generated Code를 실행 전에 읽었는가?,REVIEW
+processed 입력에서 시작했는가?,REVIEW
+필수 컬럼 / PK / FK를 확인했는가?,REVIEW
+merge validate / 행 수 / 미매칭을 확인했는가?,REVIEW
+line_total = quantity x unit_price를 검증했는가?,REVIEW
+completed 범위를 유지했는가?,REVIEW
+source total과 grouped total을 대조했는가?,REVIEW
+AST Static Scan을 실행했는가?,REVIEW
+회귀/분류 Feature Contract를 구분했는가?,REVIEW
+Sandbox와 Package 위험을 검토했는가?,REVIEW
+사람이 APPROVE / REVISE / BLOCK을 판단했는가?,REVIEW
+실행 후 파일/행 수/총합/범위를 다시 검증했는가?,REVIEW

@@ -1,0 +1,19 @@
+﻿problem,feature,status,reason
+regression,order_month,ALLOWED,주문 시점에 확정
+regression,order_dayofweek,ALLOWED,주문 시점에 확정
+regression,age,ALLOWED,고객 비식별 특성
+regression,payment_method,ALLOWED,주문 시점에 확정
+regression,gender,ALLOWED,고객 비식별 특성
+regression,city,ALLOWED,고객 비식별 특성
+classification,order_month,ALLOWED,주문 시점에 확정
+classification,order_dayofweek,ALLOWED,주문 시점에 확정
+classification,age,ALLOWED,고객 비식별 특성
+classification,item_count,REVIEW,주문 생성 시 이미 확정된다는 가정이 맞는지 확인 필요
+classification,total_quantity,REVIEW,주문 생성 시 이미 확정된다는 가정이 맞는지 확인 필요
+classification,order_amount,REVIEW,주문 생성 시 이미 확정된다는 가정이 맞는지 확인 필요
+classification,category_count,REVIEW,"장바구니 집계, 예측 시점에 확정된다는 가정 확인 필요"
+classification,customer_tenure_days,REVIEW,가입일이 주문일보다 늦은 행이 있어 그대로 쓰면 미래 정보 누수 가능
+classification,payment_method,ALLOWED,주문 시점에 확정
+classification,gender,ALLOWED,고객 비식별 특성
+classification,city,ALLOWED,고객 비식별 특성
+classification,dominant_category,REVIEW,"장바구니 집계, 예측 시점에 확정된다는 가정 확인 필요"

@@ -1,0 +1,11 @@
+﻿check,value,status
+orders.order_id 고유성,True,PASS
+line_total = quantity x unit_price 불일치 행,0,PASS
+merge 전 order_items 행 수,764,INFO
+merge 후 행 수 (many_to_one이라 같아야 함),764,PASS
+orders와 매칭되지 않은 행,0,PASS
+order_date 변환 실패,0,PASS
+completed 주문 상세 행 수,474,INFO
+completed 외 상태가 섞였는가,0,PASS
+source total (completed line_total 합),148990000,INFO
+monthly grouped total,148990000,PASS
