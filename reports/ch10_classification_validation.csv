@@ -1,0 +1,9 @@
+﻿check,value,status
+binary_target_contract,True,PASS
+forbidden_feature_overlap,0,PASS
+strict_merge_contract,True,PASS
+all_splits_have_two_classes,True,PASS
+selected_model_from_validation,True,PASS
+selected_threshold_from_validation,0.2,PASS
+public_prediction_privacy,0,PASS
+test_rows_for_metrics,50,PASS

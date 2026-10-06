@@ -1,0 +1,4 @@
+﻿merge,relationship,left_rows,right_rows,unmatched_count
+orders <-> order_item_features,one_to_one,300,300,0
+orders -> customers,many_to_one,300,150,0
+target scope filter (completed/cancelled only),row_filter,300,248,52

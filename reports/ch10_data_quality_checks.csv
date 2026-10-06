@@ -1,0 +1,5 @@
+﻿check,failing_rows
+quantity_positive,0
+unit_price_positive,0
+line_total_matches_quantity_times_unit_price,0
+signup_date_after_order_date (customer_tenure_days를 결측 처리한 건수),56

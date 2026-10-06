@@ -1,0 +1,20 @@
+﻿column,selected,role,reason
+order_month,True,allowed_feature,예측 시점(주문 생성 직후)에 이미 확정되어 있다고 가정
+order_dayofweek,True,allowed_feature,예측 시점(주문 생성 직후)에 이미 확정되어 있다고 가정
+age,True,allowed_feature,"고객 비식별 특성, 주문 생성 시점에 이미 확정"
+item_count,True,allowed_feature,"장바구니 내용, 주문 생성 시점에 이미 확정"
+total_quantity,True,allowed_feature,"장바구니 내용, 주문 생성 시점에 이미 확정"
+order_amount,True,allowed_feature,"장바구니 내용, 주문 생성 시점에 이미 확정"
+category_count,True,allowed_feature,"장바구니에 담긴 카테고리 다양성, 주문 생성 시점에 이미 확정"
+customer_tenure_days,True,allowed_feature,가입일이 주문일보다 이전인 경우에만 계산(주문일 - 가입일). 가입일이 주문일보다 나중인 경우(이 데이터에서 56건)는 주문 시점에 아직 존재하지 않는 정보라 결측으로 남기고 Pipeline이 대체값으로 채움
+payment_method,True,allowed_feature,예측 시점(주문 생성 직후)에 이미 확정되어 있다고 가정
+gender,True,allowed_feature,"고객 비식별 특성, 주문 생성 시점에 이미 확정"
+city,True,allowed_feature,"고객 비식별 특성, 주문 생성 시점에 이미 확정"
+dominant_category,True,allowed_feature,"장바구니에서 가장 많이 담긴 카테고리, 주문 생성 시점에 이미 확정"
+cancel_reason,False,forbidden,취소가 확정된 뒤에만 존재하는 사후 정보(이번 데이터에는 없음)
+cancelled_at,False,forbidden,취소가 확정된 뒤에만 존재하는 사후 정보(이번 데이터에는 없음)
+customer_id,False,forbidden,고객 식별자
+is_cancelled,False,forbidden,예측 대상 자체
+order_id,False,forbidden,주문 식별자
+order_status,False,forbidden,Target을 그대로 담고 있는 사후 정보(취소/환불 확정 상태)
+product_id,False,forbidden,주문 상세가 확인되어야 알 수 있는 식별자

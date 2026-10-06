@@ -1,0 +1,5 @@
+﻿model,cell,count
+Logistic Regression,TN (완료->완료),20
+Logistic Regression,FP (완료->취소위험),17
+Logistic Regression,FN (취소->완료),4
+Logistic Regression,TP (취소->취소위험),9

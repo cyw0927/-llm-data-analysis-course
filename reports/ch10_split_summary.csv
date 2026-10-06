@@ -1,0 +1,4 @@
+﻿split,rows,ratio_pct,cancelled_count,cancelled_pct
+train,148,59.68,38,25.68
+validation,50,20.16,13,26.0
+test,50,20.16,13,26.0
