@@ -626,6 +626,104 @@ def create_diagnostic_figures(
     }
 
 
+def plot_feature_audit_table(
+    feature_audit: pd.DataFrame,
+    figure_dir: str | Path = "reports/figures",
+    filename: str = "ch09_feature_audit.png",
+) -> Path:
+    """Draw the Feature Audit table with matplotlib and save it as a PNG."""
+    output_dir = Path(figure_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    korean = configure_korean_font()
+
+    columns = ["column", "selected", "role", "reason"]
+    cell_text = feature_audit[columns].astype(str).values.tolist()
+    fig_height = 0.35 * len(cell_text) + 1.2
+    fig, ax = plt.subplots(figsize=(13, fig_height))
+    ax.axis("off")
+    table = ax.table(cellText=cell_text, colLabels=columns, loc="center", cellLoc="left")
+    table.auto_set_font_size(False)
+    table.set_fontsize(9)
+    table.scale(1, 1.3)
+    table.auto_set_column_width(col=list(range(len(columns))))
+    ax.set_title("Feature Leakage Audit" if not korean else "Feature Leakage Audit")
+    fig.tight_layout()
+    output_path = output_dir / filename
+    fig.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    return output_path
+
+
+def plot_split_timeline(
+    train_data: pd.DataFrame,
+    test_data: pd.DataFrame,
+    figure_dir: str | Path = "reports/figures",
+    filename: str = "ch09_split_timeline.png",
+) -> Path:
+    """Draw the Train/Final Test date ranges as a horizontal timeline."""
+    import matplotlib.dates as mdates
+
+    output_dir = Path(figure_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    korean = configure_korean_font()
+
+    train_start, train_end = train_data["order_date"].min(), train_data["order_date"].max()
+    test_start, test_end = test_data["order_date"].min(), test_data["order_date"].max()
+
+    fig, ax = plt.subplots(figsize=(8, 3))
+    ax.barh(["Train"], [(train_end - train_start).days + 1], left=[train_start], color="#4C72B0")
+    ax.barh(["Final Test"], [(test_end - test_start).days + 1], left=[test_start], color="#DD8452")
+    ax.set_xlabel("order_date")
+    ax.set_title(
+        "Train / Final Test 시간 순서 분할" if korean else "Train / Final Test chronological split"
+    )
+    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
+    fig.autofmt_xdate()
+    fig.tight_layout()
+    output_path = output_dir / filename
+    fig.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    return output_path
+
+
+def plot_model_comparison_bars(
+    model_comparison: pd.DataFrame,
+    figure_dir: str | Path = "reports/figures",
+    filename: str = "ch09_model_comparison.png",
+) -> Path:
+    """Draw a grouped bar chart comparing test_MAE and test_RMSE across models."""
+    output_dir = Path(figure_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    korean = configure_korean_font()
+
+    models = model_comparison["model"].tolist()
+    mae = model_comparison["test_MAE"].to_numpy()
+    rmse = model_comparison["test_RMSE"].to_numpy()
+    x = np.arange(len(models))
+    width = 0.35
+
+    fig, ax = plt.subplots(figsize=(7, 5))
+    ax.bar(x - width / 2, mae, width, label="test_MAE", color="#4C72B0")
+    ax.bar(x + width / 2, rmse, width, label="test_RMSE", color="#DD8452")
+    ax.set_xticks(x)
+    ax.set_xticklabels(models)
+    ax.set_ylabel("원" if korean else "amount")
+    ax.set_title(
+        "Final Test: Baseline vs Frozen Model" if not korean else "Final Test: Baseline vs Frozen Model"
+    )
+    ax.legend()
+    for i, v in enumerate(mae):
+        ax.text(i - width / 2, v, f"{v:,.0f}", ha="center", va="bottom", fontsize=8)
+    for i, v in enumerate(rmse):
+        ax.text(i + width / 2, v, f"{v:,.0f}", ha="center", va="bottom", fontsize=8)
+    fig.tight_layout()
+    output_path = output_dir / filename
+    fig.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    return output_path
+
+
 def build_leakage_checklist() -> pd.DataFrame:
     check_items = [
         "예측 시점이 명확한가?",

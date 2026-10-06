@@ -9,6 +9,7 @@
 - `images/step02_leakage.png`
 - `images/step04_split.png`
 - `images/step06_final_metrics.png`
+- `images/final_prediction_result.png` (STEP 16~23 확장 과제)
 
 ## 공식 기준
 - 공식 Notebook: `notebooks/ch09_regression_analysis.ipynb`
