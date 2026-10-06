@@ -1,0 +1,6 @@
+﻿llm_claim,evidence,actual_result,final_decision
+필요 컬럼으로 현재 질문을 계산할 수 있다,df.columns,필수 컬럼 모두 존재,사용
+line_total은 quantity × unit_price 기준으로 검증해야 한다,line_total 계산 비교,불일치 0건,사용
+products 병합 후 미매칭을 확인해야 한다,merge validate + indicator,미매칭 0건,사용
+source total과 category total이 같아야 한다,sum 비교,total_match=True,사용
+카테고리 차이가 취소·구매의 원인을 뜻한다,현재 데이터는 집계 관찰만 제공,인과 Evidence 없음,보류
