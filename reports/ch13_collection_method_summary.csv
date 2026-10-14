@@ -1,0 +1,4 @@
+﻿method,priority,strength,required_checks
+공식 파일,1,원본 보존·재현이 쉬움,제공기관·기준일·인코딩·라이선스·hash
+공식 API,2,최신성·자동화에 유리,공식 문서·method·인증·rate limit·pagination·오류 구조
+제한적 공개 HTML,3,API가 없는 공개 페이지의 최소 정보 확인,이용약관·robots.txt·저작권·개인정보·요청량

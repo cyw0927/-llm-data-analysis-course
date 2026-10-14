@@ -1,0 +1,2 @@
+﻿scope,collection_status,quality_status,rows,key_missing,key_duplicates,date_parse_failures,reason
+actual_external_holiday_api,SKIPPED,NO_DATA,NOT_AVAILABLE,NOT_EVALUATED,NOT_EVALUATED,NOT_EVALUATED,Network Gate HOLD / no API request

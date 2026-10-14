@@ -1,0 +1,2 @@
+﻿execution_status,data_name,provider,source_url,collection_method,data_reference_date,collected_at_utc,license_or_terms,robots_status,request_scope,query,page,page_size,sort,request_count,page_count,first_request_at,last_request_at,retry_after_seen,retry_count,stop_reason,raw_path,processed_path,metadata_path,sha256,row_count,column_count,quality_status,notes
+NOT_EXECUTED,,,,,,,,,,,,,,,,,,,,,,,,,,,NOT_REVIEWED,

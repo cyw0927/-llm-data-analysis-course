@@ -1,0 +1,2 @@
+﻿join_key,how,validate,right_key_duplicate_count,before_rows,after_rows,row_count_preserved,left_only_count,both_count,status,data_origin
+order_month,left,one_to_one,0,3,3,True,0,3,PASS,SYNTHETIC_DEMO_ONLY

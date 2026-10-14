@@ -1,0 +1,2 @@
+﻿provider,official_url,source_type,docs_review_date,data_reference_period,collected_at_utc,license_note,network_gate,actual_collection_status,raw_snapshot,metadata_sha256,api_execution_approved
+한국천문연구원,https://www.data.go.kr/data/15012690/openapi.do,official_api_xml,2026-10-14,NOT_COLLECTED,,공공데이터포털: 이용허락범위 제한 없음 (실행 시 재확인),HOLD,SKIPPED,,,False

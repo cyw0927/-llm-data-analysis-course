@@ -1,0 +1,4 @@
+﻿analysis_question,external_data_needed,provider,source_type,official_url,reference_date,collection_range,join_key,license_or_terms,collection_enabled,interpretation_caution
+특정 월 완료 주문 금액 변동과 함께 볼 외부 요인은?,공휴일·날씨·행사 중 질문에 필요한 최소 데이터,,official_file / official_api / limited_html,,,,날짜 또는 월,,False,동시 변화는 원인 증명이 아님
+특정 지역 완료 주문 금액 차이와 함께 볼 지역 지표는?,인구·관광·지역 통계 중 필요한 지표,,official_file / official_api,,,,행정구역 코드,,False,지역 단위·기준일·표본 차이 확인
+특정 검색어 결과가 시간에 따라 어떻게 달라지는가?,공식 검색 API의 제한된 결과,Naver Search API 등,official_api,https://developers.naver.com/docs/serviceapi/search/blog/blog.md,,query / page / collection time,검색어·수집 시각,현재 공식 정책 재확인,False,검색 결과는 전체 시장·여론이 아님

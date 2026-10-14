@@ -1,0 +1,6 @@
+﻿check_item,value,status,data_origin
+rows_positive,3,PASS,SYNTHETIC_DEMO_ONLY
+duplicated_rows,0,PASS,SYNTHETIC_DEMO_ONLY
+missing_values,0,REVIEW,SYNTHETIC_DEMO_ONLY
+key_missing:order_month,0,PASS,SYNTHETIC_DEMO_ONLY
+key_duplicate:order_month,0,PASS,SYNTHETIC_DEMO_ONLY

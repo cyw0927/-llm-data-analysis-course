@@ -1,0 +1,4 @@
+﻿env_key,state,configured,value_exposed
+PUBLIC_DATA_API_KEY,MISSING,False,False
+NAVER_CLIENT_ID,MISSING,False,False
+NAVER_CLIENT_SECRET,MISSING,False,False

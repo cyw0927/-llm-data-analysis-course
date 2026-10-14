@@ -1,0 +1,4 @@
+﻿scope,execution_status,quality_status,requests,reason
+actual_external_collection,SKIPPED,NO_DATA,0,"Network Gate HOLD, no approved API request"
+external_monthly_join_demo,SYNTHETIC_DEMO_ONLY,DEMO_PASS,0,Three clearly fabricated counts used solely for join validation
+internal_monthly_completed_sales,EXECUTED,PASS,0,Computed from repository processed CSV files
