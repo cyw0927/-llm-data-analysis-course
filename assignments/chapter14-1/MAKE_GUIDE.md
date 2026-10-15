@@ -47,9 +47,21 @@ Make에서 이름 Tourism Trend Weekly Report로 새 Scenario 생성. Schedule�
 
 실행 날짜는 필요에 맞게 변경. Run once 후 **HTTP 200, results → title/data → period/ratio 실제 값**을 확인한다. ratio는 실제 검색 건수가 아니다.
 
-## STEP 28 — 관광공사 HTTP
+## STEP 28 — 관광공사 HTTP (실제 호출로 검증된 값)
 
-Swagger에서 성공했던 지역별 관광 체류/소비 강도 endpoint를 사용하고 serviceKey 및 필수 파라미터를 그대로 설정. Run once 후 결과가 단순 성공 코드가 아니라 **지역, 기준 시점, 체류/소비 강도**를 실제로 포함하는지 확인한다. 만약 두 기능을 각각 조회해야 한다면 HTTP 모듈을 분리하고 각 결과를 별도로 검증한다.
+HTTP 모듈을 **두 개**로 나눠 각각 GET으로 호출한다. serviceKey는 Make 연결/변수에 보관하고 문서·스크린샷에 노출하지 않는다.
+
+공통 Query: `numOfRows=100`, `pageNo=1`, `MobileOS=ETC`, `MobileApp=AppTest`, `baseYm=202509`, `areaCd=11`, `_type=json`, `serviceKey=<본인 키>`
+
+| 구분 | URL | 추가 Query | 값 필드 |
+|---|---|---|---|
+| 체류 강도 | `https://apis.data.go.kr/B551011/AreaTarDemDsService/areaTarSjrnDsList` | `tarSjrnDsIxCd=21` | `tarSjrnDsIxVal` |
+| 소비 강도 | `https://apis.data.go.kr/B551011/AreaTarDemDsService/areaTarExpDsList` | `tarExpDsIxCd=2201` | `tarExpDsIxVal` |
+
+- 응답 구조: `response.header.resultCode == "0000"`(성공), 데이터는 `response.body.items.item[]`, 서울 기준 26건(`totalCount` 확인).
+- 행 필드: `baseYm`, `areaCd`, `areaNm`, `signguCd`, `signguNm`, 값 필드. `signguNm="_"`(`signguCd="0"`)는 시도 전체 집계 행이므로 시군구와 구분한다.
+- Run once 후 `resultCode`가 `0000`인지, 지역·기준월·강도 값이 실제로 들어 있는지 확인한다. (로컬 Python 수집에서 위 설정으로 26건/26건 수집 확인됨)
+- 값이 100건을 넘는 지역을 조회한다면 `totalCount`만큼 pageNo를 늘려 반복 조회해야 한다.
 
 ## STEP 29~30 — 단순 가공 + LLM
 

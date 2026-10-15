@@ -63,7 +63,7 @@ python -m unittest discover -s tests -v
 
 모든 단계 PASS → PDF 실물 검증 → 같은 명령 두 번째 실행하여 중복·오염 없음을 확인 → 그 후 Windows 작업 스케줄러에 run_pipeline.bat 등록.
 
-작업 스케줄러: 프로그램 C:\Windows\System32\cmd.exe, 인수 /c "C:\dev\llm-data-analysis-course\assignments\chapter14-1\run_pipeline.bat", 시작 위치 C:\dev\llm-data-analysis-course\assignments\chapter14-1. 예시 주기는 매주 월요일 오전 9시. **등록은 사용자가 수동 수행**.
+작업 스케줄러: 프로그램 C:\Windows\System32\cmd.exe, 인수 /c "C:\dev\llm-data-analysis-course\assignments\chapter14-1\run_pipeline.bat", 시작 위치 C:\dev\llm-data-analysis-course\assignments\chapter14-1. 예시 주기는 매주 월요일 오전 9시. 등록명 `Chapter14-1-TourismTrend`, 매주 월요일 09:00 (2026-10-15 등록·수동 실행 검증, LastResult=0). `.venv`는 `python -m venv .venv --system-site-packages`로 생성(기업 보안 정책이 새 venv의 numpy DLL을 차단하는 환경 대응).
 
 ## PART 2 Make (별도 온라인 실습)
 
