@@ -30,6 +30,17 @@ class Chapter141Tests(unittest.TestCase):
         with self.assertRaises(ValueError):
             parse_naver_response(data)
 
+    def test_tourism_actual_success_code_0000(self):
+        # 실제 관광공사 Swagger 응답 형태: resultCode='0000', items.item 배열
+        payload = {"response": {
+            "header": {"resultCode": "0000", "resultMsg": "OK"},
+            "body": {"items": {"item": [
+                {"baseYm": "202509", "areaCd": "11", "areaNm": "서울특별시",
+                 "tarSjrnDsIxCd": "21", "tarSjrnDsIxVal": "89.81"}
+            ]}, "numOfRows": 10, "pageNo": 1, "totalCount": 26},
+        }}
+        validate_tourism_response(payload)
+
     def test_tourism_api_error_rejected(self):
         payload = {"response": {"header": {"resultCode": "SERVICE_KEY_IS_NULL"},
                                 "body": {"items": {"item": [{"area": "서울"}]}}}}

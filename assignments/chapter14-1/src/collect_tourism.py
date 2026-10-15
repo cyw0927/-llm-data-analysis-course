@@ -32,7 +32,7 @@ def validate_tourism_response(data: object) -> None:
         response = data.get("response", data)
         header = response.get("header", {}) if isinstance(response, dict) else {}
         code = str(header.get("resultCode", "")).strip()
-        if code and code not in ("00", "0", "NORMAL_CODE"):
+        if code and code not in ("0000", "00", "0", "NORMAL_CODE"):
             raise RuntimeError(f"공공데이터 API 응답 오류: code={code}, "
                                f"message={header.get('resultMsg')}")
     if not has_actual_records(data):
