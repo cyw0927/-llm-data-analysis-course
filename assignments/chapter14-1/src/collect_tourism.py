@@ -39,6 +39,45 @@ def validate_tourism_response(data: object) -> None:
         raise ValueError("실제 지역 데이터 배열을 확인하지 못했습니다. Swagger 응답을 확인하세요.")
 
 
+def extract_items(data: dict) -> list[dict]:
+    items = data.get("response", {}).get("body", {}).get("items") or {}
+    item = items.get("item", []) if isinstance(items, dict) else []
+    return [item] if isinstance(item, dict) else list(item)
+
+
+def fetch_all_pages(url: str, service_key: str, params: dict, name: str) -> dict:
+    """totalCount까지 페이지네이션 후 하나의 응답으로 합치고 건수를 검증한다."""
+    page_size = int(params.get("numOfRows", 100))
+    page = int(params.get("pageNo", 1))
+    merged: dict | None = None
+    items: list[dict] = []
+    total = None
+    while True:
+        query = {**params, "pageNo": page, "serviceKey": service_key}
+        response = requests.get(url, params=query, timeout=30)
+        response.raise_for_status()
+        try:
+            data = response.json()
+        except ValueError as exc:
+            raise ValueError(f"{name}: JSON 응답이 아닙니다. Swagger의 응답 형식을 확인하세요.") from exc
+        validate_tourism_response(data)
+        body = data["response"]["body"]
+        total = int(body.get("totalCount", 0))
+        items.extend(extract_items(data))
+        if merged is None:
+            merged = data
+        if len(items) >= total or page > 1000:
+            break
+        page += 1
+    if len(items) != total:
+        raise RuntimeError(f"{name}: 수집 건수({len(items)})가 totalCount({total})와 다릅니다.")
+    merged["response"]["body"]["items"] = {"item": items}
+    merged["response"]["body"]["numOfRows"] = len(items)
+    merged["response"]["body"]["pageNo"] = 1
+    merged["response"]["body"]["totalCount"] = total
+    return merged
+
+
 def main() -> None:
     load_dotenv(BASE / ".env")
     service_key = os.getenv("TOURISM_SERVICE_KEY")
@@ -58,16 +97,10 @@ def main() -> None:
     responses = {}
     for name, url in endpoints.items():
         params = dict(config[name]["params"])
-        params["serviceKey"] = service_key
-        response = requests.get(url, params=params, timeout=30)
-        response.raise_for_status()
-        try:
-            data = response.json()
-        except ValueError as exc:
-            raise ValueError(f"{name}: JSON 응답이 아닙니다. Swagger의 응답 형식을 확인하세요.") from exc
-        validate_tourism_response(data)
+        data = fetch_all_pages(url, service_key, params, name)
         responses[name] = data
-        print(f"[PASS] Tourism {name}: HTTP {response.status_code}, 실제 항목 구조 확인")
+        print(f"[PASS] Tourism {name}: {len(extract_items(data))}건 수집, "
+              f"totalCount={data['response']['body']['totalCount']}")
     for name, data in responses.items():
         path = raw / f"tourism_{name}_{stamp}.json"
         path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")

@@ -41,7 +41,8 @@ def scaled_image(path: Path, max_width: float = 480, max_height: float = 270) ->
 def main() -> None:
     font = select_korean_font()
     source = REPORTS / "llm_summary.md"
-    charts = [REPORTS / "naver_trend.png", REPORTS / "tourism_consumption_top10.png"]
+    charts = [REPORTS / "naver_trend.png", REPORTS / "tourism_stay_top10.png",
+              REPORTS / "tourism_consumption_top10.png"]
     required = [source, *charts]
     missing = [str(p) for p in required if not p.exists() or p.stat().st_size == 0]
     if missing:
@@ -56,7 +57,9 @@ def main() -> None:
         Spacer(1, 12),
         Paragraph(f"생성일: {date.today().isoformat()}", styles["BodyText"]),
         Spacer(1, 10),
-        Paragraph("NAVER 검색 ratio는 상대지수이며 지역 관광 수요의 원인을 증명하지 않습니다.",
+        Paragraph("데이터 해석의 한계: NAVER 검색 ratio는 실제 검색 건수가 아닌 상대지수이며, "
+                  "관광공사 강도 지표는 지역·기준월별 지수입니다. 두 자료는 단위·지역·기간이 달라 "
+                  "직접 비교하거나 인과를 단정할 수 없습니다. 최신 월은 집계 중인 부분 월일 수 있습니다.",
                   styles["BodyText"]),
         Spacer(1, 12),
     ]

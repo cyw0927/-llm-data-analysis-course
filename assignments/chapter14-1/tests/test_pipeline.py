@@ -2,7 +2,7 @@
 import unittest
 
 from src.collect_naver import parse_naver_response
-from src.collect_tourism import validate_tourism_response
+from src.collect_tourism import validate_tourism_response, extract_items
 from src.analyze import extract_records, tourism_frame
 from src.generate_llm_report import build_prompt
 
@@ -72,6 +72,20 @@ class Chapter141Tests(unittest.TestCase):
                 {"area": "서울", "ym": "202609", "score": 2}]
         with self.assertRaises(ValueError):
             tourism_frame(rows, {"region": "area", "period": "ym", "value": "score"}, "stay")
+
+    def test_tourism_aggregate_row_separated(self):
+        rows = [
+            {"areaNm": "서울특별시", "signguNm": "_", "baseYm": "202509", "v": "89.81"},
+            {"areaNm": "서울특별시", "signguNm": "종로구", "baseYm": "202509", "v": "84.26"},
+        ]
+        mapping = {"region": "signguNm", "period": "baseYm", "value": "v", "area": "areaNm"}
+        df = tourism_frame(rows, mapping, "stay")
+        self.assertEqual(sorted(df["scope"]), ["시군구", "시도 전체"])
+        self.assertIn("서울특별시 전체", set(df["region"]))
+
+    def test_extract_items_single_dict(self):
+        data = {"response": {"body": {"items": {"item": {"a": 1}}}}}
+        self.assertEqual(extract_items(data), [{"a": 1}])
 
     def test_llm_prompt_warns_against_false_comparison(self):
         prompt = build_prompt([{"source": "NAVER", "value": 10}])

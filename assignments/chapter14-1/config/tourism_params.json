@@ -1,18 +1,40 @@
 {
   "stay": {
-    "params": {},
+    "params": {
+      "numOfRows": 100,
+      "pageNo": 1,
+      "MobileOS": "ETC",
+      "MobileApp": "AppTest",
+      "baseYm": "202509",
+      "areaCd": "11",
+      "tarSjrnDsIxCd": "21",
+      "_type": "json"
+    },
     "fields": {
-      "region": "",
-      "period": "",
-      "value": ""
+      "region": "signguNm",
+      "period": "baseYm",
+      "value": "tarSjrnDsIxVal",
+      "area": "areaNm",
+      "signgu_code": "signguCd"
     }
   },
   "consumption": {
-    "params": {},
+    "params": {
+      "numOfRows": 100,
+      "pageNo": 1,
+      "MobileOS": "ETC",
+      "MobileApp": "AppTest",
+      "baseYm": "202509",
+      "areaCd": "11",
+      "tarExpDsIxCd": "2201",
+      "_type": "json"
+    },
     "fields": {
-      "region": "",
-      "period": "",
-      "value": ""
+      "region": "signguNm",
+      "period": "baseYm",
+      "value": "tarExpDsIxVal",
+      "area": "areaNm",
+      "signgu_code": "signguCd"
     }
   }
 }
