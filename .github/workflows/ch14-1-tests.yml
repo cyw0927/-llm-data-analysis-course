@@ -1,0 +1,24 @@
+name: Verify Chapter 14-1 (offline)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'assignments/chapter14-1/**'
+      - '.github/workflows/ch14-1-tests.yml'
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies
+        run: python -m pip install pandas requests matplotlib python-dotenv
+      - name: Check Python syntax
+        run: python -m compileall -q assignments/chapter14-1/src assignments/chapter14-1/run_pipeline.py
+      - name: Unit tests without API credentials
+        working-directory: assignments/chapter14-1
+        run: python -m unittest discover -s tests -v
