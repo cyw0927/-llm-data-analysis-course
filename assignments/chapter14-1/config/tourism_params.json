@@ -1,0 +1,18 @@
+{
+  "stay": {
+    "params": {},
+    "fields": {
+      "region": "",
+      "period": "",
+      "value": ""
+    }
+  },
+  "consumption": {
+    "params": {},
+    "fields": {
+      "region": "",
+      "period": "",
+      "value": ""
+    }
+  }
+}
