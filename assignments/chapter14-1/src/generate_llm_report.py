@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -44,9 +45,20 @@ def main() -> None:
         raise ValueError("분석 요약이 비었거나 필수 컬럼·수치가 유효하지 않습니다.")
     records = df.to_dict("records")
     from google import genai
-    response = genai.Client(api_key=api_key).models.generate_content(
-        model=model, contents=build_prompt(records)
-    )
+    from google.genai import errors
+    client = genai.Client(api_key=api_key)  # 변수 유지: 체이닝 시 클라이언트가 먼저 닫힘
+    prompt = build_prompt(records)
+    response = None
+    for attempt in range(1, 6):  # 429/503 같은 일시 오류만 재시도
+        try:
+            response = client.models.generate_content(model=model, contents=prompt)
+            break
+        except (errors.ServerError, errors.ClientError) as exc:
+            if getattr(exc, "code", None) not in (429, 503) or attempt == 5:
+                raise
+            wait = 10 * attempt
+            print(f"[RETRY] LLM {exc.code} 일시 오류, {wait}초 후 재시도 ({attempt}/5)")
+            time.sleep(wait)
     text = getattr(response, "text", None)
     if not text or not text.strip():
         raise RuntimeError("LLM이 빈 결과를 반환했습니다.")

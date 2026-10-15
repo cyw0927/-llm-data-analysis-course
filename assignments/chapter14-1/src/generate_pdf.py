@@ -1,12 +1,13 @@
 """Windows 맑은 고딕 기반 한글 PDF: 보고서/두 그림/기준일 포함."""
 from __future__ import annotations
 
+import re
 from datetime import date
 from html import escape
 from pathlib import Path
 
 from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -64,11 +65,26 @@ def main() -> None:
         Spacer(1, 12),
     ]
     for line in source.read_text(encoding="utf-8").splitlines():
-        if not line.strip():
+        stripped = line.strip()
+        if not stripped or stripped == "---":
             story.append(Spacer(1, 5))
-        else:
-            story.append(Paragraph(escape(line).replace("  ", "&nbsp; "),
-                                   styles["BodyText"]))
+            continue
+        heading = re.match(r"^(#{1,4})\s+(.*)", stripped)
+        if heading:
+            style = styles["Heading1" if len(heading.group(1)) == 1 else "Heading2"]
+            story.append(Paragraph(escape(heading.group(2)), style))
+            continue
+        indent = (len(line) - len(line.lstrip())) // 2
+        text = escape(stripped)
+        text = text.replace("**", "")  # 맑은 고딕 굵은체 미등록: 강조 기호만 제거
+        if text.startswith("* "):
+            text = "• " + text[2:]
+        elif text.startswith("&gt; "):
+            text = "<i>" + text[5:] + "</i>"
+        story.append(Paragraph(text, styles["BodyText"], bulletText=None)
+                     if not indent else
+                     Paragraph(text, ParagraphStyle("indent", parent=styles["BodyText"],
+                                                    leftIndent=14 * indent)))
     for figure in charts:
         story.append(Spacer(1, 14))
         story.append(scaled_image(figure))
