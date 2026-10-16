@@ -10,7 +10,10 @@ NAVER 52행, 관광 각각 resultCode=0000/26행, LLM HTTP 200과 생성문 수�
 LLM 앞에는 관광 두 응답의 resultCode가 모두 0000인지 확인하는 필터를 뒀다.
 최초 요약에서 체류와 소비 지표를 비교하는 표현을 발견해 지침을 보강하고 재실행한 문장을 다시 검토했다.
 Make는 **On demand·Inactive**다. Gmail Send an email 모듈을 추가하고 Google 연결 화면까지 준비했으며,
-권한 연결·수신인·실제 발송과 예약 활성화는 사용자 확인 전에는 실행하지 않는다.
+사용자 직접 Google 연결 및 본인 수신인 설정을 완료했고 테스트 1회 발송 동의를 받았다.
+전체 재검증은 Gemini 503 후 일일 무료 한도(20회/일) 소진 429로 중단됐다.
+Make에서 검증했던 LLM 응답으로 Gmail 단독 테스트를 시도했으나 403 insufficient authentication scopes로 거절됐다.
+현재 메일은 0통이며 Google 발송 권한 재승인 대기다. 예약 활성화는 수행하지 않았다.
 Gmail을 추가하기 전 성공한 API/LLM 실행과, Gmail까지 포함된 전체 성공을 구분한다.
 
 로컬 `.env` 키를 이 Scenario에 저장하고 Run once하는 것은 사용자가 명시적으로 승인했다.
@@ -106,4 +109,4 @@ Scheduler/NAVER HTTP/관광 HTTP/LLM/Gmail 모든 모듈 Run once 검증 후에�
 
 Scenario 전체 화면, NAVER HTTP 응답, 관광 HTTP 응답, LLM 출력, Gmail 수신, Schedule 활성화/History. 비밀키·사용자 이메일은 필요한 부분만 마스킹한다.
 
-**주의**: 위의 실제 검증 결과와 설정 가이드를 구분한다. Scenario의 API/LLM 호출은 확인했으나 Gmail 발송·수신 및 예약 실행은 아직 검증되지 않았다.
+**주의**: 위의 실제 검증 결과와 설정 가이드를 구분한다. Scenario의 API/LLM 호출은 확인했으나 Gmail 발송은 권한 부족으로 실패했으며 수신·예약 실행도 미검증이다.

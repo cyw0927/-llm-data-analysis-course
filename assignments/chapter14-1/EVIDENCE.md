@@ -54,8 +54,16 @@ Scenario: [Tourism Trend Weekly Report](https://eu1.make.com/3207920/scenarios/7
 | 관광 소비 Run once | PASS, HTTP 200, resultCode=0000, 26행, baseYm=202509, 서울 전체 119.08 |
 | LLM Run once | PASS, HTTP 200, 위 최신 NAVER 값과 관광 전체 대표값을 전달. 두 관광 API의 resultCode=0000 조건 필터 적용 |
 | LLM 검토 | 최초 초안의 체류/소비 숫자 직접 비교 표현 발견, 각각 다른 지표로 별개 서술하도록 지침 보강. 10:47~10:48 재실행 HTTP 200, 모든 입력 수치·기준 기간·직접 비교 금지 문구 확인 PASS |
-| Gmail | Send an email 모듈 추가, Google 연결 창까지 준비. 연결·발송·수신은 미완료이며 사용자 직접 OAuth 연결 및 발송 동의 필요 |
+| Gmail | 사용자 직접 OAuth 연결 및 1회 테스트 발송 동의 완료. 11:02 단독 테스트는 403 insufficient authentication scopes로 거절되어 메일 0통. 재승인 대기 |
 | 예약 활성화/예약 수신 | On demand, Inactive로 저장. 수행하지 않음. 사용자 동의 및 Gmail 검증 후 진행 |
+
+## 현재 외부 서비스 병목
+
+- Gmail을 추가한 전체 재검증은 Gemini 503(high demand), 이어서 429 RESOURCE_EXHAUSTED로 LLM 단계에서 중단되어 Gmail에 도달하지 않았다.
+- Gemini 응답: generate_content_free_tier_requests, 모델 gemini-3.8-flash, 프로젝트별 모델 무료 일일 한도 20회 소진. retryDelay 약 22시간(79201초). 한도 초기화 전 추가 요청을 중단했다.
+- 이후 Make에서 이미 검증한 LLM 응답을 Gmail 단독 테스트 입력으로 제공했다. 로컬 분석/PDF를 전달하지 않았으며 일반 Scenario의 동적 LLM 매핑도 바꾸지 않았다.
+- 단독 Gmail 테스트는 403 Request had insufficient authentication scopes로 실패했다. 발송/수신 성공 및 전체 5개 모듈 일괄 성공으로 표시하지 않는다.
+- 코드 커밋 54287e3의 GitHub Actions(38837473428)는 syntax check와 16개 단위테스트 모두 success.
 
 ## 해석과 한계
 
