@@ -1,0 +1,41 @@
+name: Verify Chapter 14-2 starter
+
+on:
+  push:
+    paths:
+      - 'assignments/chapter14-2/**'
+      - '.github/workflows/ch14-2-tests.yml'
+  workflow_dispatch:
+
+jobs:
+  seed-unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pandas
+        run: python -m pip install pandas
+      - name: Compile Python
+        run: python -m compileall -q assignments/chapter14-2/seed
+      - name: Run offline seed tests
+        working-directory: assignments/chapter14-2
+        run: python -m unittest discover -s tests -v
+
+  dashboard-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: assignments/chapter14-2/dashboard
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: TypeScript check
+        run: npm run typecheck
+      - name: Next.js build (no credentials, does not validate live data)
+        run: npm run build
