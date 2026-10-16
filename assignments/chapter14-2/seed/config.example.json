@@ -1,0 +1,15 @@
+{
+  "stay": {
+    "period": "baseYm",
+    "area_code": "areaCd",
+    "district_code": "signguCd",
+    "value": "tarSjrnDsIxVal"
+  },
+  "consumption": {
+    "period": "baseYm",
+    "area_code": "areaCd",
+    "district_code": "signguCd",
+    "value": ""
+  },
+  "_note": "체류 필드는 2026-10-15 Swagger 성공 응답에 근거. 소비 value 필드는 소비 API의 실제 JSON 확인 후 입력해야 함. 파일에 Secret 기록 금지."
+}
