@@ -13,7 +13,7 @@ Make는 **On demand·Inactive**다. Gmail Send an email 모듈을 추가하고 G
 사용자 직접 Google 연결 및 본인 수신인 설정을 완료했고 테스트 1회 발송 동의를 받았다.
 전체 재검증은 Gemini 503 후 일일 무료 한도(20회/일) 소진 429로 중단됐다.
 Make에서 검증했던 LLM 응답으로 Gmail 단독 테스트를 시도했으나 403 insufficient authentication scopes로 거절됐다.
-현재 메일은 0통이며 Google 발송 권한 재승인 대기다. 예약 활성화는 수행하지 않았다.
+사용자가 Google 발송 권한을 재승인한 뒤 11:21 Gmail 단독 실행으로 테스트 메일 1통 발송·INBOX 수신을 확인했다. 예약 활성화는 수행하지 않았다.
 Gmail을 추가하기 전 성공한 API/LLM 실행과, Gmail까지 포함된 전체 성공을 구분한다.
 
 로컬 `.env` 키를 이 Scenario에 저장하고 Run once하는 것은 사용자가 명시적으로 승인했다.
@@ -109,4 +109,4 @@ Scheduler/NAVER HTTP/관광 HTTP/LLM/Gmail 모든 모듈 Run once 검증 후에�
 
 Scenario 전체 화면, NAVER HTTP 응답, 관광 HTTP 응답, LLM 출력, Gmail 수신, Schedule 활성화/History. 비밀키·사용자 이메일은 필요한 부분만 마스킹한다.
 
-**주의**: 위의 실제 검증 결과와 설정 가이드를 구분한다. Scenario의 API/LLM 호출은 확인했으나 Gmail 발송은 권한 부족으로 실패했으며 수신·예약 실행도 미검증이다.
+**주의**: 위의 실제 검증 결과와 설정 가이드를 구분한다. Scenario의 API/LLM 호출은 확인했으나 Gmail은 권한 재승인 후 단독 발송·수신을 확인했다. 새 LLM 호출을 포함한 전체 일괄 재실행과 예약 실행은 아직 미검증이다.

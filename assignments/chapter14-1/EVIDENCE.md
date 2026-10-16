@@ -54,16 +54,28 @@ Scenario: [Tourism Trend Weekly Report](https://eu1.make.com/3207920/scenarios/7
 | 관광 소비 Run once | PASS, HTTP 200, resultCode=0000, 26행, baseYm=202509, 서울 전체 119.08 |
 | LLM Run once | PASS, HTTP 200, 위 최신 NAVER 값과 관광 전체 대표값을 전달. 두 관광 API의 resultCode=0000 조건 필터 적용 |
 | LLM 검토 | 최초 초안의 체류/소비 숫자 직접 비교 표현 발견, 각각 다른 지표로 별개 서술하도록 지침 보강. 10:47~10:48 재실행 HTTP 200, 모든 입력 수치·기준 기간·직접 비교 금지 문구 확인 PASS |
-| Gmail | 사용자 직접 OAuth 연결 및 1회 테스트 발송 동의 완료. 11:02 단독 테스트는 403 insufficient authentication scopes로 거절되어 메일 0통. 재승인 대기 |
+| Gmail | 사용자 직접 OAuth 연결 및 1회 테스트 발송 동의 완료. 11:02 단독 테스트는 403으로 거절. 사용자 재승인 후 11:21 Gmail 단독 실행 PASS, 승인된 테스트 메일 1통 발송 및 INBOX/SENT 확인 |
 | 예약 활성화/예약 수신 | On demand, Inactive로 저장. 수행하지 않음. 사용자 동의 및 Gmail 검증 후 진행 |
 
-## 현재 외부 서비스 병목
+## 외부 서비스 실패 및 복구 이력
 
 - Gmail을 추가한 전체 재검증은 Gemini 503(high demand), 이어서 429 RESOURCE_EXHAUSTED로 LLM 단계에서 중단되어 Gmail에 도달하지 않았다.
 - Gemini 응답: generate_content_free_tier_requests, 모델 gemini-3.8-flash, 프로젝트별 모델 무료 일일 한도 20회 소진. retryDelay 약 22시간(79201초). 한도 초기화 전 추가 요청을 중단했다.
 - 이후 Make에서 이미 검증한 LLM 응답을 Gmail 단독 테스트 입력으로 제공했다. 로컬 분석/PDF를 전달하지 않았으며 일반 Scenario의 동적 LLM 매핑도 바꾸지 않았다.
-- 단독 Gmail 테스트는 403 Request had insufficient authentication scopes로 실패했다. 발송/수신 성공 및 전체 5개 모듈 일괄 성공으로 표시하지 않는다.
+- 11:02 단독 Gmail 테스트는 403 Request had insufficient authentication scopes로 실패했다. 사용자 직접 재승인 후 11:21 같은 Make 검증 요약문을 입력해 Gmail 단독 테스트가 성공했다. 전체 5개 모듈을 새 LLM 호출부터 일괄 실행한 성공과 구분한다.
 - 코드 커밋 54287e3의 GitHub Actions(38837473428)는 syntax check와 16개 단위테스트 모두 success.
+
+## Gmail 재승인 후 검증 (11:21 KST)
+
+- 사용자 직접 재승인 완료 후 Make의 Gmail 모듈만 실행했다. Gemini는 다시 호출하지 않았다.
+- 입력 본문은 Make의 앞선 성공 실행에서 생성·검토한 요약문이다. PART 1의 로컬 분석 파일/PDF를 사용하지 않았다.
+- Make 결과: Success, 1 operation, Message ID `1a14283b0a30f7a8`.
+- Gmail API에서 같은 ID를 조회해 `SENT`, `INBOX` 라벨, 본인 수신인, 제목 `[자동보고서] 관광 트렌드 분석 — 2026-10-16`, 비어 있지 않은 한글 HTML 본문을 확인했다.
+- 본문 대조: 맛집 37.99787, 축제 28.31086, 캠핑 2.56608, 여행 2.19967, 서울 전체 체류 89.81·소비 119.08. 부분 월·기준 기간 차이·직접 비교 금지 문구 포함.
+- 승인된 테스트 메일은 성공 발송 1통이다. 앞선 403/503/429 실행은 발송되지 않았다.
+- 단독 테스트 입력란에서 줄바꿈이 압축되어 본문이 한 문단으로 표시됐다. 수치·한글·제목·본문 내용은 검증했으나 최종 정기 메일의 본문 배치는 새 LLM 출력으로 다시 확인해야 한다.
+- Make의 평소 동적 LLM→Gmail 매핑은 그대로 유지하며 On demand·Inactive 상태다. 예약 활성화는 수행하지 않았다.
+- 남은 항목: Gemini 한도 초기화 후 전체 5개 모듈 일괄 재실행, 사용자가 별도 동의한 경우에만 예약 활성화 및 첫 실제 예약 수신 확인.
 
 ## 해석과 한계
 
