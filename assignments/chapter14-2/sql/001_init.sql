@@ -77,7 +77,7 @@ create index if not exists idx_local_places_region_category
 create index if not exists idx_ai_region_analysis_date
     on public.ai_region_analysis (analysis_date desc);
 
--- Supabase anon/authenticated 접근은 공개 읽기만. insert/update 정책은 만들지 않음.
+-- Dashboard 대상 5개 테이블만 anon/authenticated 공개 읽기. collection_runs는 내부 전용이며 쓰기 정책은 만들지 않음.
 alter table public.regions enable row level security;
 alter table public.naver_trend enable row level security;
 alter table public.tourism_demand enable row level security;
@@ -91,7 +91,7 @@ declare t text;
 begin
     foreach t in array array[
       'regions', 'naver_trend', 'tourism_demand',
-      'local_places', 'ai_region_analysis', 'collection_runs'
+      'local_places', 'ai_region_analysis'
     ]
     loop
         if not exists (
@@ -108,13 +108,17 @@ begin
 end
 $policies$;
 
+-- 이전 버전의 동일 migration을 다시 적용하더라도 실행 로그는 공개되지 않도록 회수한다.
+drop policy if exists "public read collection_runs" on public.collection_runs;
+revoke all on public.collection_runs from public, anon, authenticated;
+
 grant usage on schema public to anon, authenticated;
 grant select on public.regions, public.naver_trend, public.tourism_demand,
-  public.local_places, public.ai_region_analysis, public.collection_runs
+  public.local_places, public.ai_region_analysis
   to anon, authenticated;
 
--- 공개 읽기 대상인 collection_runs.error_message에는 API key,
--- 인증 헤더, 호출 URL의 serviceKey 등 비밀정보를 저장하면 안 된다.
+-- collection_runs는 Make의 서버 측 Secret Key를 사용하는 내부 기록이다.
+-- error_message에는 API key, 인증 헤더, 호출 URL의 serviceKey 등 비밀정보를 저장하지 않는다.
 
 -- 수업의 Supabase SQL/View 활용 연습: 최신 관측값의 기간 차이를 감추지 않는다.
 create or replace view public.latest_tourism_demand

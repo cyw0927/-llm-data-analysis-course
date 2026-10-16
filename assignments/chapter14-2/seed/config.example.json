@@ -9,7 +9,7 @@
     "period": "baseYm",
     "area_code": "areaCd",
     "district_code": "signguCd",
-    "value": ""
+    "value": "tarExpDsIxVal"
   },
-  "_note": "체류 필드는 2026-10-15 Swagger 성공 응답에 근거. 소비 value 필드는 소비 API의 실제 JSON 확인 후 입력해야 함. 파일에 Secret 기록 금지."
+  "_note": "체류·소비 필드는 2026-10-16 실제 관광 API 성공 응답(resultCode 0000)의 전체 26행에서 확인. 원본은 Chapter 14-1에서 복사했으며 덮어쓰지 않음. Secret 기록 금지."
 }

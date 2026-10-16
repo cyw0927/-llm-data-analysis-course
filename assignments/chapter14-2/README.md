@@ -5,7 +5,7 @@
 이 폴더는 **안전한 초기 스캐폴딩**이다. 실제 운영 연동 성공·배포 완료를 의미하지 않는다. Chapter 14-1의 로컬 PDF/Gmail 자동화와 별개다.
 
 ## 실행 상태
-- [x] Supabase 6개 테이블, RLS, View SQL **실행 준비** (라이브 DB에 실행한 것은 아님)
+- [x] Supabase 6개 테이블, RLS, View SQL **실행 준비** (라이브 DB에 실행한 것은 아님; `collection_runs`는 공개 읽기 차단)
 - [x] Python+pandas Seed 전처리 스크립트 및 오프라인 테스트 기본 구성
 - [x] Next.js/TypeScript/Tailwind/Recharts/NAVER Maps + Supabase 읽기 Dashboard 기초
 - [x] Make 4개 Scenario 설정 가이드 및 배포 체크리스트

@@ -4,7 +4,12 @@ import Script from "next/script";
 import { useEffect, useRef, useState } from "react";
 import type { PlaceRow } from "@/lib/types";
 
-type MapInstance = { destroy?: () => void };
+type MapInstance = {
+  destroy?: () => void;
+  fitBounds: (coordinates: unknown[], options?: {
+    top?: number; right?: number; bottom?: number; left?: number; maxZoom?: number;
+  }) => void;
+};
 type NaverMapsApi = {
   LatLng: new (lat: number, lng: number) => unknown;
   Map: new (element: HTMLElement, options: { center: unknown; zoom: number }) => MapInstance;
@@ -32,18 +37,18 @@ export function NaverMap({ places }: { places: PlaceRow[] }) {
       && place.latitude >= -90 && place.latitude <= 90
       && place.longitude >= -180 && place.longitude <= 180
     );
+    const coordinates = points.map((point) => new api.LatLng(point.latitude!, point.longitude!));
     const center = points[0];
     const map = new api.Map(container.current, {
       center: new api.LatLng(center?.latitude ?? 37.5665, center?.longitude ?? 126.978),
-      zoom: center ? 10 : 7,
+      zoom: points.length === 1 ? 12 : 7,
     });
-    for (const point of points) {
-      new api.Marker({
-        position: new api.LatLng(point.latitude!, point.longitude!),
-        map,
-        title: point.name,
-      });
+    if (coordinates.length > 1) {
+      map.fitBounds(coordinates, { top: 24, right: 24, bottom: 24, left: 24, maxZoom: 12 });
     }
+    points.forEach((point, index) => {
+      new api.Marker({ position: coordinates[index], map, title: point.name });
+    });
     return () => map.destroy?.();
   }, [loaded, places]);
 

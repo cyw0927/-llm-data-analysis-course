@@ -18,12 +18,11 @@ export function Dashboard({ data }: { data: DashboardData }) {
     (p) => (region === "all" || p.region_code === region)
       && (category === "all" || p.search_category === category)
   ), [data.places, region, category]);
-  const demand = useMemo(() => {
-    const filtered = data.demands.filter((d) => region === "all" || d.region_code === region);
-    return [...filtered].sort((a, b) => b.reference_date.localeCompare(a.reference_date))[0];
-  }, [data.demands, region]);
-  const analysis = useMemo(() => [...data.analyses]
-    .filter((row) => region === "all" || row.region_code === region)
+  const demand = useMemo(() => region === "all" ? undefined : [...data.demands]
+    .filter((row) => row.region_code === region)
+    .sort((a, b) => b.reference_date.localeCompare(a.reference_date))[0], [data.demands, region]);
+  const analysis = useMemo(() => region === "all" ? undefined : [...data.analyses]
+    .filter((row) => row.region_code === region)
     .sort((a, b) => b.analysis_date.localeCompare(a.analysis_date))[0], [data.analyses, region]);
   const distinctRegions = data.regions.length ? data.regions : [
     ...new Set(data.demands.map((d) => d.region_code))
@@ -41,7 +40,7 @@ export function Dashboard({ data }: { data: DashboardData }) {
         <label className="flex min-w-52 flex-1 flex-col gap-2 text-sm font-medium">
           지역
           <select value={region} onChange={(e) => setRegion(e.target.value)} className="input">
-            <option value="all">전체 (최근 기록)</option>
+            <option value="all">전체 지역</option>
             {distinctRegions.map((r) => <option key={r.region_code} value={r.region_code}>{r.region_name}</option>)}
           </select>
         </label>
@@ -55,9 +54,9 @@ export function Dashboard({ data }: { data: DashboardData }) {
       </section>
 
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="핵심 지표">
-        <div className="card"><p className="muted">최근 관광 기준일</p><p className="kpi">{demand?.reference_date ?? "—"}</p></div>
-        <div className="card"><p className="muted">관광 체류 강도</p><p className="kpi">{number(demand?.stay_strength)}</p></div>
-        <div className="card"><p className="muted">관광 소비 강도</p><p className="kpi">{number(demand?.consumption_strength)}</p></div>
+        <div className="card"><p className="muted">최근 관광 기준일</p><p className="kpi">{region === "all" ? "지역 선택 필요" : demand?.reference_date ?? "기록 없음"}</p></div>
+        <div className="card"><p className="muted">관광 체류 강도</p><p className="kpi">{region === "all" ? "지역 선택 필요" : number(demand?.stay_strength)}</p></div>
+        <div className="card"><p className="muted">관광 소비 강도</p><p className="kpi">{region === "all" ? "지역 선택 필요" : number(demand?.consumption_strength)}</p></div>
         <div className="card"><p className="muted">표시 장소 수</p><p className="kpi">{filteredPlaces.length.toLocaleString("ko-KR")}</p></div>
       </section>
 
@@ -88,7 +87,7 @@ export function Dashboard({ data }: { data: DashboardData }) {
 
       <section className="card space-y-3">
         <h2 className="section-title">저장된 AI 지역 분석</h2>
-        {analysis ? <>
+        {region === "all" ? <p className="muted">지역을 선택하면 해당 지역에 저장된 AI 분석을 볼 수 있어.</p> : analysis ? <>
           <p className="muted">분석 기준일: {analysis.analysis_date}</p>
           <p className="whitespace-pre-wrap leading-7">{analysis.summary}</p>
           {analysis.limitations && <div className="border-t pt-3">

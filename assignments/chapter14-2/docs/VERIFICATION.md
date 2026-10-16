@@ -5,7 +5,7 @@
 ## STEP 0~3 Supabase
 - [ ] 프로젝트 생성, URL·Publishable Key 확인
 - [ ] 001_init.sql 실행, regions/naver_trend/tourism_demand/local_places/ai_region_analysis/collection_runs 6개 테이블 확인
-- [ ] 각 테이블 RLS 활성화/anon SELECT 정책 점검
+- [ ] 6개 테이블 RLS 활성화 확인. Dashboard 대상 5개만 anon SELECT, `collection_runs`는 anon/authenticated 접근 차단 확인
 - [ ] Dashboard에는 Publishable Key, Make에는 Secret Key로 역할 분리
 - [ ] 서비스 키가 공개 저장소와 브라우저에 없는지 점검
 
