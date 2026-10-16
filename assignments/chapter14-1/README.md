@@ -4,8 +4,8 @@
 
 ## 현재 상태
 
-- Python 프로젝트 코드/설정/배치 파일 제공. **실제 NAVER/관광/LLM API 실행 미검증**: 개인 API 키와 관광공사 Swagger 응답 필드가 필요하다.
-- Make Scenario는 계정 연동·API 키와 Gmail 권한이 필요해 자동 생성/발송하지 않았다. MAKE_GUIDE.md를 따라 본인이 구축하고 검증한다.
+- **2026-10-16 실제 검증:** NAVER 52행, 관광 체류/소비 각각 26행, 분석 요약 30행, Gemini 요약 및 한글 PDF 생성 PASS. 최종 코드 직접 실행·배치 재실행·작업 스케줄러 수동 실행 모두 성공. 단위테스트 16개 통과. 상세 근거는 EVIDENCE.md 참조.
+- Make에 독립 Scenario `Tourism Trend Weekly Report`를 생성했고 NAVER·관광 체류·소비·LLM의 실제 Run once를 검증했다. Gmail 연결/발송과 예약 실행은 별도 확인이 필요하며 아직 완료로 표시하지 않는다. PART 1의 파일을 읽거나 업로드하지 않는다.
 - 수업의 관광공사 API: https://www.data.go.kr/data/15151868/openapi.do
 - 수업의 NAVER 공식 문서: https://api.ncloud-docs.com/docs/naver-api-hub-search-trend
 - 이 폴더는 GitHub의 기존 Chapter 13 과제나 기존 YES24 도서 실습과 별개다.
@@ -16,12 +16,14 @@
 
 ```powershell
 cd C:\dev\llm-data-analysis-course
-git pull origin main
+git status --short --branch
+# 기존 변경사항이 있으면 먼저 보존하고 원격 변경을 확인한다.
+git fetch origin main
 cd assignments\chapter14-1
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
-Copy-Item .env.example .env
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
 ```
 
 PowerShell 실행 정책 오류가 난다면 **해당 터미널에서만** Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass 를 실행한 뒤 다시 활성화한다.
@@ -63,7 +65,7 @@ python -m unittest discover -s tests -v
 
 모든 단계 PASS → PDF 실물 검증 → 같은 명령 두 번째 실행하여 중복·오염 없음을 확인 → 그 후 Windows 작업 스케줄러에 run_pipeline.bat 등록.
 
-작업 스케줄러: 프로그램 C:\Windows\System32\cmd.exe, 인수 /c "C:\dev\llm-data-analysis-course\assignments\chapter14-1\run_pipeline.bat", 시작 위치 C:\dev\llm-data-analysis-course\assignments\chapter14-1. 예시 주기는 매주 월요일 오전 9시. 등록명 `Chapter14-1-TourismTrend`, 매주 월요일 09:00 (2026-10-15 등록·수동 실행 검증, LastResult=0). `.venv`는 `python -m venv .venv --system-site-packages`로 생성(기업 보안 정책이 새 venv의 numpy DLL을 차단하는 환경 대응).
+작업 스케줄러: 프로그램 C:\Windows\System32\cmd.exe, 인수 /c "C:\dev\llm-data-analysis-course\assignments\chapter14-1\run_pipeline.bat", 시작 위치 C:\dev\llm-data-analysis-course\assignments\chapter14-1. 예시 주기는 매주 월요일 오전 9시. 등록명 `Chapter14-1-TourismTrend`, 매주 월요일 09:00 (2026-10-15 기존 등록, 2026-10-16 10:27 수동 실행 검증, LastResult=0; 기존 활성 상태 유지, 다음 예약 2026-10-19 09:00 KST). `.venv`는 `python -m venv .venv --system-site-packages`로 생성(기업 보안 정책이 새 venv의 numpy DLL을 차단하는 환경 대응).
 
 ## PART 2 Make (별도 온라인 실습)
 

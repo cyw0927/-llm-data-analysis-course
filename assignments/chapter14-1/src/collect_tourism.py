@@ -49,13 +49,20 @@ def fetch_all_pages(url: str, service_key: str, params: dict, name: str) -> dict
     """totalCount까지 페이지네이션 후 하나의 응답으로 합치고 건수를 검증한다."""
     page_size = int(params.get("numOfRows", 100))
     page = int(params.get("pageNo", 1))
+    if page_size < 1 or page != 1:
+        raise ValueError(f"{name}: 전체 수집은 pageNo=1, numOfRows>0이어야 합니다.")
     merged: dict | None = None
     items: list[dict] = []
     total = None
     while True:
         query = {**params, "pageNo": page, "serviceKey": service_key}
-        response = requests.get(url, params=query, timeout=30)
-        response.raise_for_status()
+        try:
+            response = requests.get(url, params=query, timeout=30)
+        except requests.RequestException:
+            # requests 예외에는 serviceKey가 들어간 전체 URL이 포함될 수 있다.
+            raise RuntimeError(f"{name}: 관광 API 네트워크 요청 실패 (인증정보 생략)") from None
+        if not 200 <= response.status_code < 300:
+            raise RuntimeError(f"{name}: 관광 API HTTP {response.status_code} (인증정보 생략)")
         try:
             data = response.json()
         except ValueError as exc:
@@ -63,7 +70,12 @@ def fetch_all_pages(url: str, service_key: str, params: dict, name: str) -> dict
         validate_tourism_response(data)
         body = data["response"]["body"]
         total = int(body.get("totalCount", 0))
-        items.extend(extract_items(data))
+        page_items = extract_items(data)
+        if not page_items:
+            raise RuntimeError(f"{name}: totalCount 도달 전 빈 페이지입니다.")
+        if merged is not None and total != int(merged["response"]["body"]["totalCount"]):
+            raise RuntimeError(f"{name}: 페이지 사이 totalCount가 변경되었습니다.")
+        items.extend(page_items)
         if merged is None:
             merged = data
         if len(items) >= total or page > 1000:

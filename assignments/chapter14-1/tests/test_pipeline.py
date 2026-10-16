@@ -1,8 +1,11 @@
 """API 키/외부 네트워크 없이 핵심 데이터 유효성 검증 테스트."""
 import unittest
+import traceback
+from unittest.mock import Mock, patch
+import requests
 
 from src.collect_naver import parse_naver_response
-from src.collect_tourism import validate_tourism_response, extract_items
+from src.collect_tourism import validate_tourism_response, extract_items, fetch_all_pages
 from src.analyze import extract_records, tourism_frame
 from src.generate_llm_report import build_prompt
 
@@ -86,6 +89,43 @@ class Chapter141Tests(unittest.TestCase):
     def test_extract_items_single_dict(self):
         data = {"response": {"body": {"items": {"item": {"a": 1}}}}}
         self.assertEqual(extract_items(data), [{"a": 1}])
+
+    def test_tourism_pagination_collects_every_page(self):
+        def response(rows):
+            return Mock(status_code=200, json=Mock(return_value={"response": {
+                "header": {"resultCode": "0000"},
+                "body": {"totalCount": 3, "items": {"item": rows}}
+            }}))
+        with patch("src.collect_tourism.requests.get", side_effect=[
+                response([{"id": 1}, {"id": 2}]), response([{"id": 3}])]) as get:
+            data = fetch_all_pages("https://example.invalid", "test-key", {"numOfRows": 2}, "stay")
+        self.assertEqual(len(extract_items(data)), 3)
+        self.assertEqual([c.kwargs["params"]["pageNo"] for c in get.call_args_list], [1, 2])
+
+    def test_tourism_http_error_does_not_reveal_service_key(self):
+        secret = "unit-test-secret"
+        with patch("src.collect_tourism.requests.get", return_value=Mock(status_code=403)):
+            with self.assertRaisesRegex(RuntimeError, "HTTP 403") as caught:
+                fetch_all_pages("https://example.invalid", secret, {}, "stay")
+        self.assertNotIn(secret, str(caught.exception))
+
+    def test_tourism_network_error_suppresses_sensitive_traceback(self):
+        secret = "unit-test-secret"
+        with patch("src.collect_tourism.requests.get", side_effect=requests.ConnectionError(
+                "https://example.invalid?serviceKey=" + secret)):
+            try:
+                fetch_all_pages("https://example.invalid", secret, {}, "stay")
+            except RuntimeError:
+                rendered = traceback.format_exc()
+            else:
+                self.fail("Network failure was accepted")
+        self.assertNotIn(secret, rendered)
+
+    def test_tourism_nonfirst_page_rejected_before_request(self):
+        with patch("src.collect_tourism.requests.get") as get:
+            with self.assertRaises(ValueError):
+                fetch_all_pages("https://example.invalid", "test", {"pageNo": 2}, "stay")
+        get.assert_not_called()
 
     def test_llm_prompt_warns_against_false_comparison(self):
         prompt = build_prompt([{"source": "NAVER", "value": 10}])

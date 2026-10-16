@@ -5,8 +5,11 @@ __pycache__/
 logs/
 data/raw/
 data/processed/
+data/verification_backups/
 reports/*.pdf
 reports/*.png
 reports/*.csv
 reports/*.md
 .ipynb_checkpoints/
+
+.make-private/

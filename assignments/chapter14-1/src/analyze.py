@@ -144,7 +144,7 @@ def analyze_naver(naver: pd.DataFrame) -> list[dict]:
             rows.append({**common, "metric": f"직전 월 대비 변화({trend})",
                          "period": f"{prev['period'].date()}→{latest['period'].date()}",
                          "value": round(diff, 2),
-                         "note": "ratio 포인트 차이, 상대지수 간 비교"})
+                         "note": "ratio 포인트 차이. 최신 월은 부분 월일 수 있어 완전한 전월 대비 수요 감소로 해석 금지"})
     return rows
 
 
@@ -160,9 +160,12 @@ def analyze_tourism(name: str, label: str, config: dict) -> list[dict]:
     print(f"[CHECK] {name}: 파일={snapshots[-1].name} 행={len(frame)} "
           f"기준월={sorted(frame['period'].astype(str).unique())} "
           f"시군구={len(districts)} 시도전체={len(totals)} 결측=0 중복=0")
+    areas = sorted({str(r.get(config[name]["fields"].get("area"), ""))
+                    for r in extract_records(payload)} - {"", "None"})
+    scope_label = ", ".join(areas) or f"areaCd={config[name]['params'].get('areaCd', '조회 범위')}"
     plot_tourism_top10(frame, REPORTS / f"tourism_{name}_top10.png",
-                       f"지역별 {label} 상위 10개 시군구 ({latest['period'].iloc[0]})")
-    note = "지역·시점별 지표. NAVER ratio와 직접 비교 금지"
+                       f"{scope_label} {label} 상위 10개 시군구 ({latest['period'].iloc[0]})")
+    note = f"조회 범위: {scope_label}. 해당 범위 내 순위이며 전국 순위 아님. NAVER ratio와 직접 비교 금지"
     rows = []
     for _, item in totals.iterrows():
         rows.append({"source": f"Tourism API {name}", "metric": f"{label}(시도 전체)",

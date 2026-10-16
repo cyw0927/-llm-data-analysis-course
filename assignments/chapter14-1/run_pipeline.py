@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import subprocess
 import sys
 from datetime import datetime
@@ -29,7 +30,10 @@ def main() -> None:
     logging.info("PIPELINE START")
     for script in STEPS:
         logging.info("START %s", script)
-        result = subprocess.run([sys.executable, script], cwd=BASE, check=False)
+        result = subprocess.run(
+            [sys.executable, script], cwd=BASE, check=False,
+            env={**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"},
+        )
         if result.returncode:
             logging.error("FAIL %s: exit=%d; 후속 단계 실행 중단", script, result.returncode)
             raise SystemExit(result.returncode)
