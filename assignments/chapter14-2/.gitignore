@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+!.env.local.example
+node_modules/
+.next/
+*.tsbuildinfo
+.venv/
+__pycache__/
+*.pyc
+seed/raw/*
+!seed/raw/.gitkeep
+seed/processed/*
+!seed/processed/.gitkeep
+artifacts/

@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.10"
+  },
+  "private": true,
+  "scripts": {
+    "test": "node check.mjs",
+    "test:metric22": "node check_metric22.mjs"
+  }
+}

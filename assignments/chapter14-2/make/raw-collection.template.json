@@ -1,0 +1,338 @@
+{
+  "name": "Tourism Dashboard | Raw collection",
+  "flow": [
+    {
+      "id": 1,
+      "module": "http:MakeRequest",
+      "version": 4,
+      "parameters": {
+        "tlsType": "",
+        "authenticationType": "noAuth"
+      },
+      "mapper": {
+        "url": "https://naverapihub.apigw.ntruss.com/search-trend/v1/search",
+        "method": "post",
+        "headers": [
+          {
+            "name": "X-NCP-APIGW-API-KEY-ID",
+            "value": "REPLACE_IN_MAKE"
+          },
+          {
+            "name": "X-NCP-APIGW-API-KEY",
+            "value": "REPLACE_IN_MAKE"
+          }
+        ],
+        "timeout": "120",
+        "contentType": "json",
+        "inputMethod": "jsonString",
+        "shareCookies": false,
+        "parseResponse": false,
+        "allowRedirects": false,
+        "stopOnHttpError": true,
+        "jsonStringBodyContent": "{\"startDate\": \"{{formatDate(addDays(now; -365); \\\"YYYY-MM-DD\\\"; \\\"Asia/Seoul\\\")}}\", \"endDate\": \"{{formatDate(addDays(now; -1); \\\"YYYY-MM-DD\\\"; \\\"Asia/Seoul\\\")}}\", \"timeUnit\": \"month\", \"keywordGroups\": [{\"groupName\": \"여행\", \"keywords\": [\"여행\"]}, {\"groupName\": \"축제\", \"keywords\": [\"축제\"]}, {\"groupName\": \"캠핑\", \"keywords\": [\"캠핑\"]}, {\"groupName\": \"맛집\", \"keywords\": [\"맛집\"]}]}",
+        "requestCompressedContent": true
+      },
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0,
+          "name": "NAVER Trend Raw"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "module": "http:MakeRequest",
+      "version": 4,
+      "parameters": {
+        "tlsType": "",
+        "authenticationType": "noAuth"
+      },
+      "mapper": {
+        "url": "https://apis.data.go.kr/B551011/AreaTarDemDsService/areaTarSjrnDsList",
+        "method": "get",
+        "timeout": "120",
+        "shareCookies": false,
+        "parseResponse": false,
+        "allowRedirects": false,
+        "queryParameters": [
+          {
+            "name": "numOfRows",
+            "value": "100"
+          },
+          {
+            "name": "pageNo",
+            "value": "1"
+          },
+          {
+            "name": "MobileOS",
+            "value": "ETC"
+          },
+          {
+            "name": "MobileApp",
+            "value": "AppTest"
+          },
+          {
+            "name": "baseYm",
+            "value": "202509"
+          },
+          {
+            "name": "areaCd",
+            "value": "11"
+          },
+          {
+            "name": "tarSjrnDsIxCd",
+            "value": "21"
+          },
+          {
+            "name": "_type",
+            "value": "json"
+          },
+          {
+            "name": "serviceKey",
+            "value": "REPLACE_IN_MAKE"
+          }
+        ],
+        "stopOnHttpError": true,
+        "requestCompressedContent": true
+      },
+      "metadata": {
+        "designer": {
+          "x": 320,
+          "y": 0,
+          "name": "Tourism Stay Raw"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "module": "http:MakeRequest",
+      "version": 4,
+      "parameters": {
+        "tlsType": "",
+        "authenticationType": "noAuth"
+      },
+      "mapper": {
+        "url": "https://apis.data.go.kr/B551011/AreaTarDemDsService/areaTarExpDsList",
+        "method": "get",
+        "timeout": "120",
+        "shareCookies": false,
+        "parseResponse": false,
+        "allowRedirects": false,
+        "queryParameters": [
+          {
+            "name": "numOfRows",
+            "value": "100"
+          },
+          {
+            "name": "pageNo",
+            "value": "1"
+          },
+          {
+            "name": "MobileOS",
+            "value": "ETC"
+          },
+          {
+            "name": "MobileApp",
+            "value": "AppTest"
+          },
+          {
+            "name": "baseYm",
+            "value": "202509"
+          },
+          {
+            "name": "areaCd",
+            "value": "11"
+          },
+          {
+            "name": "tarExpDsIxCd",
+            "value": "22"
+          },
+          {
+            "name": "_type",
+            "value": "json"
+          },
+          {
+            "name": "serviceKey",
+            "value": "REPLACE_IN_MAKE"
+          }
+        ],
+        "stopOnHttpError": true,
+        "requestCompressedContent": true
+      },
+      "metadata": {
+        "designer": {
+          "x": 640,
+          "y": 0,
+          "name": "Tourism Consumption Raw"
+        }
+      }
+    },
+    {
+      "id": 12,
+      "module": "http:MakeRequest",
+      "version": 4,
+      "parameters": {
+        "tlsType": "",
+        "authenticationType": "noAuth"
+      },
+      "mapper": {
+        "url": "https://naverapihub.apigw.ntruss.com/search/v1/local",
+        "method": "get",
+        "headers": [
+          {
+            "name": "X-NCP-APIGW-API-KEY-ID",
+            "value": "REPLACE_IN_MAKE"
+          },
+          {
+            "name": "X-NCP-APIGW-API-KEY",
+            "value": "REPLACE_IN_MAKE"
+          }
+        ],
+        "timeout": "120",
+        "shareCookies": false,
+        "parseResponse": false,
+        "allowRedirects": false,
+        "stopOnHttpError": true,
+        "requestCompressedContent": true,
+        "queryParameters": [
+          {
+            "name": "query",
+            "value": "서울 관광명소"
+          },
+          {
+            "name": "display",
+            "value": "5"
+          },
+          {
+            "name": "start",
+            "value": "1"
+          },
+          {
+            "name": "sort",
+            "value": "random"
+          }
+        ]
+      },
+      "metadata": {
+        "designer": {
+          "x": 960,
+          "y": 0,
+          "name": "NAVER Local Raw"
+        }
+      }
+    },
+    {
+      "id": 11,
+      "module": "supabase:createARow",
+      "version": 1,
+      "parameters": {
+        "__IMTCONN__": null
+      },
+      "mapper": {
+        "table": "raw_api_data",
+        "source": "BATCH_RAW",
+        "naver_trend_raw": "{{1.data}}",
+        "tourism_demand_raw": "{{2.data}}",
+        "tourism_consumption_raw": "{{3.data}}",
+        "naver_local_raw": "{{12.data}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1280,
+          "y": 0,
+          "name": "Store Batch Raw Once"
+        },
+        "restore": {
+          "parameters": {
+            "__IMTCONN__": {
+              "label": "Chapter 14-2 Supabase Raw"
+            }
+          },
+          "expect": {
+            "table": {
+              "label": "raw_api_data"
+            }
+          }
+        },
+        "expect": [
+          {
+            "name": "table",
+            "type": "select",
+            "label": "Table",
+            "required": true
+          },
+          {
+            "name": "id",
+            "type": "text"
+          },
+          {
+            "name": "run_id",
+            "type": "text"
+          },
+          {
+            "name": "source",
+            "type": "text"
+          },
+          {
+            "name": "naver_trend_raw",
+            "type": "text"
+          },
+          {
+            "name": "tourism_demand_raw",
+            "type": "text"
+          },
+          {
+            "name": "tourism_consumption_raw",
+            "type": "text"
+          },
+          {
+            "name": "naver_local_raw",
+            "type": "text"
+          },
+          {
+            "name": "fetched_at",
+            "type": "text"
+          },
+          {
+            "name": "process_status",
+            "type": "text"
+          },
+          {
+            "name": "processed_at",
+            "type": "text"
+          },
+          {
+            "name": "error_message",
+            "type": "text"
+          },
+          {
+            "name": "processed_counts",
+            "type": "text"
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "instant": false,
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 1,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": true,
+      "slots": null,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false,
+      "freshVariables": false
+    },
+    "designer": {
+      "orphans": []
+    },
+    "zone": "eu1.make.com",
+    "notes": []
+  }
+}

@@ -1,3 +1,15 @@
+> 최신 검증: [강의 STEP 30~41](LESSON_STEP41_VERIFIED.md) — Supabase 실데이터·NAVER 지도·마커·최신 AI 요약 확인. STEP 42 모바일 검증 및 배포는 미완료입니다.
+
+> **강의 STEP24 실제 저장 완료:** Raw5 PROCESSED, 자동 정제52/26/5, 현재 서울 소비강도22=97.07 반영. 과거2201/119.08은 Raw와 비공개26행 보관에 유지했습니다. [STEP17~24 검증 기록](LESSON_STEP24_VERIFIED.md)
+
+> **소비 지표 정정(2026-10-19):** 이전 2201/119.08은 외지인 소비액이며 강의의 소비강도22/97.07과 다릅니다. 기존 값은 보존했고 Make와 DB 호환을 정정했습니다. [STEP13~16 검증 기록](LESSON_STEP16_VERIFIED.md)을 우선 보세요.
+
+> **강의 STEP 12 확인:** Seed SQL(26행·중복 0), Make 5모듈, Raw text 4개 컬럼과 정상 처리 2건을 실제 확인했습니다. [강의 STEP 9~12 검증 기록](LESSON_STEP12_VERIFIED.md)
+
+> **강의 STEP 8 확인:** 관광 CSV 26행을 검사했고 기존 Supabase 26행과 전부 일치해 재Import 없이 보존했습니다. [강의 STEP 5~8 검증 기록](LESSON_STEP8_VERIFIED.md)
+
+> **2026-10-19 상태 갱신:** 수집 자동화는 HTTP 4개 → Supabase Create a Row 1개 → Raw Trigger로 실제 2회 검증했습니다. 최신 결과와 실행 방법은 [STEP4_VERIFIED.md](STEP4_VERIFIED.md)를 기준으로 보세요. 아래 내용은 이전 초기 구성 기록이며 기존 프로젝트를 다시 생성하거나 이전 4개 시나리오 구성을 적용하지 마세요.
+
 # Chapter 14-2 — 관광 데이터 수집·저장 및 지도 기반 AI Dashboard
 
 수업 목표: **외부 API → Make → 검증/Upsert → Supabase → AI 요약 저장 → Next.js 지도 Dashboard → GitHub/Vercel**.

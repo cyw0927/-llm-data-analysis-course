@@ -1,3 +1,5 @@
+> **2026-10-19 상태 갱신:** 수집 자동화는 HTTP 4개 → Supabase Create a Row 1개 → Raw Trigger로 실제 2회 검증했습니다. 최신 결과와 실행 방법은 [STEP4_VERIFIED.md](../STEP4_VERIFIED.md)를 기준으로 보세요. 아래 내용은 이전 초기 구성 기록이며 기존 프로젝트를 다시 생성하거나 이전 4개 시나리오 구성을 적용하지 마세요.
+
 # Make 운영 수집 설정 — 4개 독립 Scenario (강의 STEP 10~28)
 
 목적: **매일 Make → 검증 → Supabase Upsert**, AI 요약 결과도 Supabase에 별도 저장. Chapter 14-1 Gmail/PDF 자동화와 직접 연결하지 않는다. 최초 테스트는 전부 **Run once**. 비밀값은 Make Connection/HTTP 비밀 헤더에만 저장하며 JSON 출력·스크린샷·DB error_message에 기록하지 않는다.

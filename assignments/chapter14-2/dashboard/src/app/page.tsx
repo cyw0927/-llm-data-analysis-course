@@ -5,10 +5,11 @@ export const dynamic = "force-dynamic";
 
 function Notice({ title, content }: { title: string; content: string }) {
   return (
-    <main className="mx-auto mt-20 max-w-2xl rounded-2xl border bg-white p-8 shadow-sm">
-      <p className="text-sm font-semibold text-blue-700">Chapter 14-2</p>
-      <h1 className="mt-3 text-2xl font-bold">{title}</h1>
-      <p className="mt-4 leading-7 text-slate-600">{content}</p>
+    <main className="notice-page">
+      <p className="eyebrow">TRIPSIGNAL · TOURISM INSIGHTS</p>
+      <h1>{title}</h1>
+      <p>{content}</p>
+      <a href="/">다시 불러오기 →</a>
     </main>
   );
 }
@@ -16,16 +17,27 @@ function Notice({ title, content }: { title: string; content: string }) {
 export default async function Home() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key) {
-    return <Notice title="Supabase 연결 설정이 필요해"
-      content="dashboard/.env.local에 URL과 Publishable Key를 입력한 뒤 개발 서버를 재시작해. Secret Key는 넣으면 안 돼." />;
-  }
+  if (!url || !key)
+    return (
+      <Notice
+        title="데이터 연결을 준비하고 있습니다"
+        content="관광 데이터 저장소에 연결되면 지역 지표와 분석을 확인할 수 있습니다."
+      />
+    );
   try {
     const data = await getDashboardData(url, key);
-    return <Dashboard data={data} />;
+    return <Dashboard data={data} loadedAt={new Date().toISOString()} />;
   } catch (error) {
-    const detail = error instanceof Error ? error.message : "알 수 없는 조회 오류";
-    return <Notice title="Supabase 조회 실패"
-      content={`DB 설정·테이블·RLS를 확인해. 오류: ${detail}`} />;
+    // Do not expose service URLs, headers, or database details to the browser.
+    console.error(
+      "Dashboard public data read failed",
+      error instanceof Error ? error.message : "unknown",
+    );
+    return (
+      <Notice
+        title="데이터를 불러오지 못했습니다"
+        content="일시적으로 관광 데이터를 조회할 수 없습니다. 잠시 후 다시 불러와 주세요."
+      />
+    );
   }
 }
