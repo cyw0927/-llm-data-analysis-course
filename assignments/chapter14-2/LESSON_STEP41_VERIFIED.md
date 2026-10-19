@@ -1,3 +1,5 @@
+> 후속 검증 완료: 모바일과 Vercel 배포 결과는 [DEPLOYMENT_VERIFIED.md](DEPLOYMENT_VERIFIED.md)를 확인하세요. 아래 내용은 STEP41 당시 기록입니다.
+
 # Chapter 14-2 — STEP 30~41 실제 연결 검증
 
 검증일: 2026-10-19 (Asia/Seoul).

@@ -1,3 +1,5 @@
+> **배포 완료:** [운영 Dashboard](https://tourism-dashboard-cyw0927.vercel.app/) · [실제 배포/모바일 검증 기록](DEPLOYMENT_VERIFIED.md). 아래 STEP별 문서는 당시 상태의 기록입니다.
+
 > 최신 검증: [강의 STEP 30~41](LESSON_STEP41_VERIFIED.md) — Supabase 실데이터·NAVER 지도·마커·최신 AI 요약 확인. STEP 42 모바일 검증 및 배포는 미완료입니다.
 
 > **강의 STEP24 실제 저장 완료:** Raw5 PROCESSED, 자동 정제52/26/5, 현재 서울 소비강도22=97.07 반영. 과거2201/119.08은 Raw와 비공개26행 보관에 유지했습니다. [STEP17~24 검증 기록](LESSON_STEP24_VERIFIED.md)
