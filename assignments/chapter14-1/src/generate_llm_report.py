@@ -48,13 +48,22 @@ def main() -> None:
         raise ValueError("분석 요약이 비었거나 필수 컬럼·수치가 유효하지 않습니다.")
     records = df.to_dict("records")
     from google import genai
-    from google.genai import errors
+    from google.genai import errors, types
     client = genai.Client(api_key=api_key)  # 변수 유지: 체이닝 시 클라이언트가 먼저 닫힘
     prompt = build_prompt(records)
     response = None
     for attempt in range(1, 6):  # 429/503 같은 일시 오류만 재시도
         try:
-            response = client.models.generate_content(model=model, contents=prompt)
+            response = client.models.generate_content(
+                model=model,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    # 이 과제는 함수 도구를 사용하지 않으므로 AFC 경고를 방지한다.
+                    automatic_function_calling=types.AutomaticFunctionCallingConfig(
+                        disable=True
+                    )
+                ),
+            )
             break
         except (errors.ServerError, errors.ClientError) as exc:
             if getattr(exc, "code", None) not in (429, 503) or attempt == 5:
